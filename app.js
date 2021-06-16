@@ -106,7 +106,7 @@ app.use((error,req,res,next)=>{
   });
 
 sequelize.
-//sync({force:true}). //reset the schema 
+//sync({force:true}). //reset the schema and data
 sync().
   then(result=>{
       console.log(result);
