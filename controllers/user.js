@@ -46,6 +46,45 @@ exports.login=async (req,res,next)=>{
     }      
   };
 
+  //***********refresh the token***************************//
+  exports.refreshToken=async(req,res,next)=>{
+    const id=req.body.userId;
+    const refreshToken=req.body.refreshToken;let newAccessToken,decodedToken;
+    try
+    {
+        const user=await User.findByPk(id);
+        if(user.refreshToken===refreshToken)
+        {
+          try
+          {
+            decodedToken =jwt.verify(refreshToken,'somesuperrefreshsecretsecret');
+          }
+          catch(err)
+          {
+            err.message='Refresh Token Expired. Re-Enter credentials to login!'
+            err.statusCode = 401;
+            throw err;
+          }      
+          newAccessToken=jwt.sign({ kID:user.k_PID,userId:user.id,role:user.role},'somesupersecretsecret',{expiresIn:'25m'});
+        }
+        else
+        {
+          const error = new Error('Invalid Request.Refresh Token not Found. Login again !.');
+          error.statusCode = 401;
+          throw error;
+        }
+        res.status(200).json({message:"Tokens updated",newAccessToken:newAccessToken});
+    }
+    catch(err)
+    {
+      if (!err.statusCode) 
+      {
+          err.statusCode = 500;
+      }
+      next(err);
+    }      
+  }
+
 
   //Get Route to fetch Employee
   exports.fetchEmployer=async(req,res,next)=>{

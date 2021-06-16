@@ -1,5 +1,8 @@
 const Retailer=require('../models/retailer');
 const bcrypt = require('bcryptjs');
+const AmazonBusiness=require('../models/amazonBusiness');
+const EbayBusiness=require('../models/ebayBusiness');
+const FlipkartBusiness=require('../models/flipkartBusiness');
 const Product=require('../models/product');
 const Category=require('../models/category');
 const Brand=require('../models/brand');
@@ -7,6 +10,8 @@ const Region=require('../models/region');
 const User = require('../models/user');
 const Employer=require('../models/employer');
 const RegionProduct=require('../models/regionProduct');
+const { Op } = require('sequelize');
+
 
 exports.home=async(req,res,next)=>{
   res.status(200).json({message:"Welcome to Kassandra!",status:"Deployment Success"});
@@ -20,7 +25,6 @@ exports.fetchRegions=async(req,res,next)=>{
   {
     const foundRegions=await Region.findAll();
     res.status(200).json({message:"Fetch success",regions:foundRegions});
-
   }
   catch(err)
   {
@@ -29,7 +33,6 @@ exports.fetchRegions=async(req,res,next)=>{
         err.statusCode = 500;
       }
       next(err);
-
   }
 }
 
@@ -40,7 +43,6 @@ exports.fetchCategory=async(req,res,next)=>{
   {
     const foundCategories=await Category.findAll();
     res.status(200).json({message:"Fetch success",categories:foundCategories});
-
   }
   catch(err)
   {
@@ -49,7 +51,6 @@ exports.fetchCategory=async(req,res,next)=>{
         err.statusCode = 500;
       }
       next(err);
-
   }
 }
 
@@ -60,7 +61,6 @@ exports.fetchBrand=async(req,res,next)=>{
   {
     const foundBrands=await Brand.findAll();
     res.status(200).json({message:"Fetch success",brands:foundBrands});
-
   }
   catch(err)
   {
@@ -166,6 +166,89 @@ exports.fetchRegionStocks=async(req,res,next)=>{
   catch(err)
   {
     if (!err.statusCode) 
+      {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+  }
+
+
+
+
+  /***************************** DASHBOARD STATS*******************************/
+
+
+
+//Fetch Top Products
+  exports.fetchTopProducts=async(req,res,next)=>{
+    try
+    {
+      const date=req.query.date;
+      const platform=req.query.platform;
+      let platformProducts,stats={},orders=0,profit=0,feedback=0;
+      if(platform=='Amazon')
+      {
+        const foundUser=await User.findByPk(req.userId);
+        const foundRetailer=await foundUser.getRetailer({attributes:['id']});
+        platformProducts=await AmazonBusiness.findAll({where:{dated:date,retailer_id:foundRetailer.id},attributes:['id','prod_name','total_units_sold','total_profit','feedback','business_gender','business_age'],order:[['total_units_sold','DESC']]});
+        res.status(200).json({message:"Fetch Success",products:amazonProducts});
+      }
+      else if(platform=='Flipkart')
+      {
+        const foundUser=await User.findByPk(req.userId);
+        const foundRetailer=await foundUser.getRetailer({attributes:['id']});
+        platformProducts=await FlipkartBusiness.findAll({where:{dated:date,retailer_id:foundRetailer.id},attributes:['id','prod_name','total_units_sold','total_profit','feedback','business_gender','business_age'],order:[['total_units_sold','DESC']]});
+        res.status(200).json({message:"Fetch Success",products:flipkartProducts});
+      }
+      else
+      {
+        const foundUser=await User.findByPk(req.userId);
+        const foundRetailer=await foundUser.getRetailer({attributes:['id']});
+        platformProducts=await EbayBusiness.findAll({where:{dated:date,retailer_id:foundRetailer.id},attributes:['id','prod_name','total_units_sold','total_profit','feedback','business_gender','business_age'],order:[['total_units_sold','DESC']]});
+      }
+      let cnt=0,male=0,female=0,kids=0,other=0;let topProducts=0;'business_gender','business_age';
+      platformProducts.forEach(i=>{
+        orders+=i.total_units_sold;
+        profit+=i.total_profit;
+        feedback+=i.feedback;
+        if(cnt<10)
+        {
+          topProducts.push({'prodName':i.prod_name,'totalUnits':i.total_units_sold,'total_profit':i.total_profit});
+          cnt++;
+        }
+      });
+      stats={'orders':order,'profit':profit,'feedback':feedback};
+      res.status(200).json({message:"Fetch Success",products:topProducts,stats:stats});
+    }
+    catch(err)
+    {
+      if (!err.statusCode) 
+      {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+  }
+
+
+  //Fetch Charts
+  exports.fetchCharts=async(req,res,next)=>{
+    const platform=req.query.platform;
+    try
+    {
+      const foundUser=await User.findByPk(req.userId);
+      const foundRetailer=await foundUser.getRetailer({attributes:['id']});
+      if(platform=='Amazon')
+      {
+
+      }
+
+
+    }
+    catch(err)
+    {
+      if (!err.statusCode) 
       {
         err.statusCode = 500;
       }

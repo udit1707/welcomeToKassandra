@@ -12,6 +12,7 @@ const AmazonBusiness = sequelize.define('amazonBusiness', {
   prod_name:Sequelize.STRING,
   total_units_sold:Sequelize.INTEGER,
   total_profit:Sequelize.INTEGER,
+  feedback:Sequelize.INTEGER,
   dated:
       {
         type: Sequelize.DATEONLY,
