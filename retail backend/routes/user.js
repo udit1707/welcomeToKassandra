@@ -10,7 +10,7 @@ router.post('/login',userController.login);
 
 router.post('/logout',isAuth,userController.userLogout);
 
-router.post('/token',userController.refreshToken);
+router.post('/updateRtoken',userController.refreshToken);
 
 router.get('/allEmployers',cacheRedis.fetchEmployer,userController.fetchEmployer);
 
