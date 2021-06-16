@@ -10,36 +10,16 @@ const Flipkart = sequelize.define('flipkart', {
     primaryKey: true
   },
   prod_name:Sequelize.STRING,
-  allocated:{
+  total_stock:Sequelize.INTEGER,
+  regional_stock:{
     type: Sequelize.TEXT,
     defaultValue:null,
     get: function() {
-      return JSON.parse(this.getDataValue("allocated"));
+      return JSON.parse(this.getDataValue("regional_stock"));
     },
     set: function(value) {
-      return this.setDataValue("allocated", JSON.stringify(value));
-  }
-},
-sell_out:{
-    type: Sequelize.TEXT,
-    defaultValue:null,
-    get: function() {
-      return JSON.parse(this.getDataValue("sell_out"));
-    },
-    set: function(value) {
-      return this.setDataValue("sell_out", JSON.stringify(value));
-  }
-},
-business:{
-    type: Sequelize.TEXT,
-    defaultValue:null,
-    get: function() {
-      return JSON.parse(this.getDataValue("business"));
-    },
-    set: function(value) {
-      return this.setDataValue("business", JSON.stringify(value));
+      return this.setDataValue("regional_stock", JSON.stringify(value));
   }
 }
 });
-
 module.exports = Flipkart;

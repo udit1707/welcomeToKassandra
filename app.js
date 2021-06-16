@@ -9,10 +9,10 @@ const employeeRoutes=require('./routes/employee');
 const manufacturerRoutes=require('./routes/manufacturer');
 const retailerRoutes=require('./routes/retailer');
 const userRoutes=require('./routes/user');
-// const ambulanceRoutes=require('./routes/ambu');
-// const patientRoutes=require('./routes/patient');
-// const rateLimiter=require('./middleware/rateLimit');
-// const twilRoutes=require('./routes/twilio');
+
+const AmazonBusiness=require('./models/amazonBusiness');
+const EbayBusiness=require('./models/ebayBusiness');
+const FlipkartBusiness=require('./models/flipkartBusiness');
 const Product=require('./models/product');
 const Brand=require('./models/brand');
 const Category=require('./models/category');
@@ -80,17 +80,19 @@ Region.belongsToMany(Product,{through:RegionProduct});
 
 Retailer.hasMany(RegionProduct,{onDelete:"cascade"});
 
-// Manufacturer.hasOne(Employer,{onDelete:"cascade"});
-// Retailer.hasOne(Employer,{onDelete:"cascade"});
 
 
-// Retailer.hasMany(Amazon,{onDelete:"cascade"});
-// Retailer.hasMany(Flipkart,{onDelete:"cascade"});
-// Retailer.hasMany(Ebay,{onDelete:"cascade"});
+Retailer.hasMany(Amazon,{onDelete:"cascade"});
+Retailer.hasMany(Flipkart,{onDelete:"cascade"});
+Retailer.hasMany(Ebay,{onDelete:"cascade"});
 
-// Product.hasOne(Amazon,{onDelete:"cascade"});
-// Product.hasOne(Flipkart,{onDelete:"cascade"});
-// Product.hasOne(Ebay,{onDelete:"cascade"});
+Product.hasOne(Amazon,{onDelete:"cascade"});
+Product.hasOne(Flipkart,{onDelete:"cascade"});
+Product.hasOne(Ebay,{onDelete:"cascade"});
+
+Product.hasMany(AmazonBusiness);
+Product.hasMany(EbayBusiness);
+Product.hasMany(FlipkartBusiness);
 
 
 
