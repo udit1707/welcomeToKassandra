@@ -29,7 +29,7 @@ exports.login=async (req,res,next)=>{
           error.statusCode = 401;
           throw error;
         }
-        const token=jwt.sign({ kID:user.k_PID,userId:user.id,role:user.role},'somesupersecretsecret',{expiresIn:'25m'});
+        const token=jwt.sign({ kID:user.k_PID,userId:user.id,role:user.role},'somesupersecretsecret',{expiresIn:'180m'});
         const refreshToken=jwt.sign({ kID:user.k_PID,userId:user.id,role:user.role},'somesuperrefreshsecretsecret',{expiresIn:'3600m'});
         user.refreshToken=refreshToken;
         await user.save();        
@@ -99,7 +99,7 @@ exports.login=async (req,res,next)=>{
         }
         var obj={id:id,orgs:name};
         obj=JSON.stringify(obj);
-        redisClient.setex('allEmployers', 1800, obj);
+        redisClient.setex('allEmployers', 300, obj);
         //console.log(id);
         //console.log(name);
         res.status(200).json({message:"Fetch Success",obj:JSON.parse(obj)});

@@ -13,6 +13,8 @@ const Retailer = sequelize.define('retailer', {
   email:Sequelize.STRING,
   mobile:Sequelize.BIGINT,
   address:Sequelize.STRING,
+  city:Sequelize.STRING,
+  state:Sequelize.STRING,
   desc:{
     type: Sequelize.TEXT,
     defaultValue:null,

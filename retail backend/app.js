@@ -1,5 +1,4 @@
 const path=require('path');
-const fs=require('fs');
 const express=require('express');
 const app=express();
 const bodyParser=require('body-parser');
@@ -9,12 +8,11 @@ const employeeRoutes=require('./routes/employee');
 const manufacturerRoutes=require('./routes/manufacturer');
 const retailerRoutes=require('./routes/retailer');
 const userRoutes=require('./routes/user');
-
+const miscRoutes=require('./routes/misc');
 const AmazonBusiness=require('./models/amazonBusiness');
 const EbayBusiness=require('./models/ebayBusiness');
 const FlipkartBusiness=require('./models/flipkartBusiness');
 const Product=require('./models/product');
-const Brand=require('./models/brand');
 const Category=require('./models/category');
 const Region=require('./models/region');
 const Retailer=require('./models/retailer');
@@ -28,7 +26,9 @@ const Amazon=require('./models/amazon');
 const Flipkart = require('./models/flipkart');
 const User = require('./models/user');
 // const RetailerRegion=require('./models/retailerRegion');
-const RegionProduct=require('./models/regionProduct');
+const RetailerProduct = require('./models/retailerProduct');
+const RegionRetailer=require('./models/regionRetailer');
+
 
 app.use(bodyParser.json());
 // app.use(require('connect').bodyParser());
@@ -53,7 +53,8 @@ app.use((req, res, next) => {
 app.use('/manufacturer',manufacturerRoutes);
 app.use('/employee',employeeRoutes);
 app.use('/retailer',retailerRoutes);
-app.use('/',userRoutes);
+app.use(miscRoutes);
+app.use(userRoutes);
 
 // Table Assocations
 
@@ -65,20 +66,22 @@ User.hasOne(Employee,{onDelete:"cascade"});
 Manufacturer.belongsToMany(Employee,{through:EmployeeManufacturer});
 Retailer.belongsToMany(Employee,{through:EmployeeRetailer});
 
+Manufacturer.hasMany(Product);
 
-Retailer.hasMany(Product,{onDelete:"cascade"});
-Product.belongsTo(Retailer);
+Product.hasMany(RetailerProduct);
+Retailer.hasMany(RetailerProduct,{onDelete:"cascade"});
+
+RetailerProduct.belongsToMany(Region,{through:RegionRetailer});
+Region.belongsToMany(RetailerProduct,{through:RegionRetailer});
 
 Category.hasMany(Product);
 Product.belongsTo(Category);
 
-Brand.hasMany(Product);
-Product.belongsTo(Brand);
 
-Product.belongsToMany(Region,{through:RegionProduct});
-Region.belongsToMany(Product,{through:RegionProduct});
+// Product.belongsToMany(Region,{through:RegionProduct});
+// Region.belongsToMany(Product,{through:RegionProduct});
 
-Retailer.hasMany(RegionProduct,{onDelete:"cascade"});
+// Retailer.hasMany(RegionProduct,{onDelete:"cascade"});
 
 
 
@@ -106,7 +109,7 @@ app.use((error,req,res,next)=>{
   });
 
 sequelize.
-//sync({force:true}). //reset the schema
+//sync({force:true}). //reset the schema 
 sync().
   then(result=>{
       console.log(result);
@@ -114,19 +117,22 @@ sync().
       const isRegion=await Region.count();
       if(isRegion==0)
       {
-        await Region.create({region:"UP East"});
+        await Region.create({region:"Uttar Pradesh"});
+        await Region.create({region:"Delhi"});
+        await Region.create({region:"Punjab"});
+        await Region.create({region:"Assam"});
+        await Region.create({region:"Bihar"});
       }
       const isCategory=await Category.count();
       if(isCategory==0)
       {
         await Category.create({category_name:"Mobile"});
+        await Category.create({category_name:"Laptop"});
+        await Category.create({category_name:"Desktop"});
+        await Category.create({category_name:"Audio"});
+        await Category.create({category_name:"Storage"});
       }
-      const isBrand=await Brand.count();
-      if(isBrand==0)
-      {
-        await Brand.create({brand_name:"Samsung"});
-      }
-      
+            
       console.log("App Server started!");
   });
 });

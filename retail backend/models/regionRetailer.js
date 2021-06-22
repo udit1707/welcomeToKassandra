@@ -2,13 +2,15 @@ const Sequelize=require('sequelize');
 
 const sequelize=require('../util/database');
 
-const RegionProduct = sequelize.define('regionProduct', {
+const RegionRetailer = sequelize.define('regionRetailer', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true
   },
+  regional_price:Sequelize.INTEGER,
+  region:Sequelize.STRING,
   stock_count:{type:Sequelize.INTEGER,defaultValue:0},
   sold_count:{type:Sequelize.INTEGER,defaultValue:0},
   returned_count:{type:Sequelize.INTEGER,defaultValue:0},
@@ -17,4 +19,4 @@ const RegionProduct = sequelize.define('regionProduct', {
   in_sale:{type:Sequelize.BOOLEAN,defaultValue:false}
 });
 
-module.exports = RegionProduct;
+module.exports = RegionRetailer;
