@@ -4,73 +4,19 @@ const AmazonBusiness=require('../models/amazonBusiness');
 const EbayBusiness=require('../models/ebayBusiness');
 const FlipkartBusiness=require('../models/flipkartBusiness');
 const Product=require('../models/product');
+const Manufacturer=require('../models/manufacturer');
 const Category=require('../models/category');
 const Brand=require('../models/brand');
 const Region=require('../models/region');
 const User = require('../models/user');
 const Employer=require('../models/employer');
-const RegionProduct=require('../models/regionProduct');
+const RetailerProduct = require('../models/retailerProduct');
+const RegionRetailer=require('../models/regionRetailer');
 const { Op } = require('sequelize');
 
 
 exports.home=async(req,res,next)=>{
   res.status(200).json({message:"Welcome to Kassandra!",status:"Deployment Success"});
-}
-
-
-/****************************************Fetch Region*************************************/
-
-exports.fetchRegions=async(req,res,next)=>{
-  try
-  {
-    const foundRegions=await Region.findAll();
-    res.status(200).json({message:"Fetch success",regions:foundRegions});
-  }
-  catch(err)
-  {
-    if (!err.statusCode) 
-      {
-        err.statusCode = 500;
-      }
-      next(err);
-  }
-}
-
-/****************************************Fetch Category*************************************/
-
-exports.fetchCategory=async(req,res,next)=>{
-  try
-  {
-    const foundCategories=await Category.findAll();
-    res.status(200).json({message:"Fetch success",categories:foundCategories});
-  }
-  catch(err)
-  {
-    if (!err.statusCode) 
-      {
-        err.statusCode = 500;
-      }
-      next(err);
-  }
-}
-
-/****************************************Fetch Brands*************************************/
-
-exports.fetchBrand=async(req,res,next)=>{
-  try
-  {
-    const foundBrands=await Brand.findAll();
-    res.status(200).json({message:"Fetch success",brands:foundBrands});
-  }
-  catch(err)
-  {
-    if (!err.statusCode) 
-      {
-        err.statusCode = 500;
-      }
-      next(err);
-
-  }
 }
 
 /***************************************NEW RETAILER**************************************/
@@ -81,11 +27,14 @@ exports.postNewRetailer=async(req,res,next)=>{
   const email=req.body.email;
   const mobile=req.body.mobile;
   const address=req.body.address;
+  const city=req.body.city;
+  const state=req.body.state;
   const ret_details=req.body.details;  
 
   //username, password, name,
     
-    try{
+    try
+    {
       const existinguser=await User.findOne({where:{k_PID:kassandraPortalID},attributes:['id','k_PID']});
       if(existinguser)
       {
@@ -95,7 +44,7 @@ exports.postNewRetailer=async(req,res,next)=>{
       }
       const hashedPwd=await bcrypt.hash(password,12);
       const newUser=await User.create({k_PID:kassandraPortalID,password:hashedPwd,role:'Retailer'});
-      const retailer=await newUser.createRetailer({org_name:orgName,email:email,mobile:mobile,address:address,desc:ret_details});
+      const retailer=await newUser.createRetailer({org_name:orgName,email:email,mobile:mobile,address:address,desc:ret_details,city:city,state:state});
       const employer=await Employer.create({org_name:orgName,type:"retailer",temp_id:retailer.id});
       res.status(200).json({message:"Retailer added!"});
     }
@@ -109,59 +58,182 @@ exports.postNewRetailer=async(req,res,next)=>{
     }
 }
 
-/************************************NEW PRODUCT********************************************/
+/************************************Pick NEW PRODUCT********************************************/
 exports.postNewProduct=async(req,res,next)=>{
-    const prodName=req.body.prodName;
-    const snNo=req.body.snNo;
-    const category=req.body.category;
-    const brand=req.body.brand 
-    const region=req.body.region; //could be an array [assigning products to multiple regions]
-    const desc=req.body.desc;
-    try{
-      const foundRetailer=await Retailer.findByPk(req.userId);
-      if(!foundRetailer)
+  const prodId=req.body.prodId;
+  const prodUnits=+req.body.units;
+  try
+  {
+    const foundUser=await User.findByPk(req.userId);    
+    const foundRetailer=await foundUser.getRetailer();
+    if(!foundRetailer)
+    {
+      const error = new Error("Retailer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const foundProduct=await Product.findByPk(prodId,{attributes:['id','prod_name','offline_retailer_units']});
+    if(prodUnits>foundProduct.offline_retailer_units)
+    {
+      const error = new Error("Insufficient Stock.Select a new stock count");
+       error.statusCode = 500;
+       throw error;
+    }
+    foundProduct.offline_retailer_units-=prodUnits;
+    await foundProduct.save();
+
+    const retailerProduct=await RetailerProduct.create({prod_name:foundProduct.prod_name,units_avail:prodUnits,units_sold:0,retailer:foundRetailer.org_name});
+    await foundRetailer.addRetailerProduct(retailerProduct);
+    await foundProduct.addRetailerProduct(retailerProduct); 
+    res.status(200).json({message:"Product Added for the retailer!"});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+    {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
+/*************************Fetch Product by Category******************************************/
+exports.fetchProdByCategory=async(req,res,next)=>{
+  const catId=req.params.catId;let arr=[];
+  try
+  {
+    const foundUser=await User.findByPk(req.userId);
+    const foundRetailer=await foundUser.getRetailer();let arr=[];
+    if(!foundRetailer)
       {
         const error = new Error("Retailer does not exist");
          error.statusCode = 404;
          throw error;
-      }
-      const newProduct=await foundRetailer.createProduct({prod_name:prodName,serial_no:snNo,desc:desc});
-      const foundCategory=await Category.findOne({where:{category_name:category}});
-      const foundBrand=await Brand.findOne({where:{brand_name:brand}});
-      const foundRegion=await Region.findOne({where:{region:region}});
-      const regionProduct=await foundRegion.addProduct(newProduct,{through:{RegionProduct}});
-      await foundCategory.addProduct(newProduct);
-      await foundBrand.addProduct(newProduct);
-      await foundRetailer.addRegionProduct(regionProduct);
-      
-      res.status(200).json({message:"Product Added!"});
-    }
-    catch(err)
-    {
-      if (!err.statusCode) 
+      }   
+      const cat=await Category.findByPk(catId,{attributes:['id','category_name']});
+      const products=await cat.getProducts({attributes:['id','prod_name','serial_no','offline_retailer_units','units_sold_total','manufacturerId']});
+      console.log(products);
+      for(let i=0;i<products.length;i++)
       {
-        err.statusCode = 500;
+        let el=products[i];
+        const foundProd=await RetailerProduct.findOne({where:{retailerId:foundRetailer.id,productId:el.id}});
+        if(!foundProd)
+        {
+          const manf=await Manufacturer.findByPk(el.manufacturerId,{attributes:['id','org_name','email']});
+          let obj={'prodData':el,'manufData':manf};
+        arr.push(obj);
       }
-      next(err);
+      }
+      res.status(200).json({message:"Products Fetched",prodArr:arr});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+    {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
+/*****************************Fetch Products by Popularity ***********************************/
+exports.fetchProdByPop=async(req,res,next)=>{
+  try{
+    const foundUser=await User.findByPk(req.userId);
+    const foundRetailer=await foundUser.getRetailer();let arr=[];
+    if(!foundRetailer)
+      {
+        const error = new Error("Retailer does not exist");
+         error.statusCode = 404;
+         throw error;
+      }   
+    const products=await Product.findAll({order:[['units_sold_total','DESC']],attributes:['id','prod_name','serial_no','offline_retailer_units','units_sold_total','manufacturerId','categoryId']});
+    for(let i=0;i<products.length;i++)
+    {
+      let el=products[i];
+      const foundProd=await RetailerProduct.findOne({where:{retailerId:foundRetailer.id,productId:el.id}});
+      if(!foundProd)
+      {
+        const cat=await Category.findByPk(el.categoryId,{attributes:['category_name']});
+        const manf=await Manufacturer.findByPk(el.manufacturerId,{attributes:['id','org_name','email']});
+        let obj={'prodData':el,'manufData':manf,'category':cat.category_name};
+      arr.push(obj);
     }
   }
+  res.status(200).json({message:"Fetched By Popularity",products:arr});
+}
+  catch(err)
+  {
+    if (!err.statusCode) 
+    {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
 
-/*****************Region Wise Product Analysis ************************************/
+/******************************Region-Wise  Similar Product PriceAnalysis**************************************************/
+exports.similarProductPrice=async(req,res,next)=>{
+  const prodId=req.params.prodId; 
+  try
+  {
+    const foundUser=await User.findByPk(req.userId);    
+    const foundRetailer=await foundUser.getRetailer();let arr=[];
+    if(!foundRetailer)
+      {
+        const error = new Error("Retailer does not exist");
+         error.statusCode = 404;
+         throw error;
+      }
+   
+    const foundRetailerProducts=await RetailerProduct.findAll({where:{[Op.not]:[{retailerId:foundRetailer.id}],productId:prodId}}); 
+    
+    for(let i=0;i<foundRetailerProducts.length;i++)
+    {
+      const retailerRegion=await RegionRetailer.findAll({where:{retailerProductId:foundRetailerProducts[i].id}});// foundRetailerProducts[i].getRegionRetailer();
+      let obj={regionData:retailerRegion,retailerTotalData:foundRetailerProducts[i]};
+      arr.push(obj);
+    }
+    res.status(200).json({message:"Analysis Report fetched",dataArr:arr});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+    {
+      err.statusCode = 500;
+    }
+    next(err);    
+  }
+}
 
-
-exports.fetchRegionStocks=async(req,res,next)=>{
-  const region=req.query.region;
-  try{
-    const foundRetailer=await Retailer.findByPk(req.userId);
+/*************************************Allocate Regions of Interest to product and select price and stocks****************/
+exports.postRegionsandPrice=async(req,res,next)=>{
+  const prodId=req.body.prodId;
+  const regionId=req.body.regionId;
+  const price=+req.body.price;
+  const stocks=+req.body.stocks;
+  try
+  {
+    const foundUser=await User.findByPk(req.userId);    
+      const foundRetailer=await foundUser.getRetailer();
       if(!foundRetailer)
       {
         const error = new Error("Retailer does not exist");
          error.statusCode = 404;
          throw error;
       }
-    const foundRegionProducts=await foundRetailer.getRegionProducts();
-    console.log(foundRegionProducts);
-    res.status(200).json({message:"Products found!",prods:foundRegionProducts});
+    const retailerProd=await RetailerProduct.findOne({where:{retailerId:foundRetailer.id,productId:prodId}});
+    if(stocks>retailerProd.units_avail)
+    {
+      const error = new Error("Insufficient Stock.Select a new stock count");
+      error.statusCode = 500;
+      throw error;
+    }
+    retailerProd.units_avail=retailerProd.units_avail-stocks;
+    await retailerProd.save();
+    const region=await Region.findByPk(regionId);
+    await region.addRetailerProduct(retailerProd,{through:{regional_price:price,region:region.region,stock_count:stocks}});
+    res.status(200).json({message:"Product Region Updated"});
   }
   catch(err)
   {
@@ -170,91 +242,196 @@ exports.fetchRegionStocks=async(req,res,next)=>{
         err.statusCode = 500;
       }
       next(err);
-    }
   }
+}
 
-
-
-
-  /***************************** DASHBOARD STATS*******************************/
-
-
-
-//Fetch Top Products
-  exports.fetchTopProducts=async(req,res,next)=>{
-    try
-    {
-      const date=req.query.date;
-      const platform=req.query.platform;
-      let platformProducts,stats={},orders=0,profit=0,feedback=0;
-      if(platform=='Amazon')
+/*****************************Purchase more stocks for a product *********************************************/
+exports.addMoreProdUnits=async(req,res,next)=>{
+  const prodId=req.body.prodId;
+  const prodUnits=+req.body.units;
+  try
+  {
+      const foundUser=await User.findByPk(req.userId);    
+      const foundRetailer=await foundUser.getRetailer();
+      if(!foundRetailer)
       {
-        const foundUser=await User.findByPk(req.userId);
-        const foundRetailer=await foundUser.getRetailer({attributes:['id']});
-        platformProducts=await AmazonBusiness.findAll({where:{dated:date,retailer_id:foundRetailer.id},attributes:['id','prod_name','total_units_sold','total_profit','feedback','business_gender','business_age'],order:[['total_units_sold','DESC']]});
-        res.status(200).json({message:"Fetch Success",products:amazonProducts});
+        const error = new Error("Retailer does not exist");
+         error.statusCode = 404;
+         throw error;
       }
-      else if(platform=='Flipkart')
+      const foundProduct=await Product.findByPk(prodId,{attributes:['id','offline_retailer_units']});
+
+      
+      
+      const retailerProduct=await RetailerProduct.findOne({where:{retailerId:foundRetailer.id,productId:foundProduct.id}});
+      
+      if((prodUnits-retailerProduct.units_avail)>foundProduct.offline_retailer_units||retailerProduct.units_avail>prodUnits)
       {
-        const foundUser=await User.findByPk(req.userId);
-        const foundRetailer=await foundUser.getRetailer({attributes:['id']});
-        platformProducts=await FlipkartBusiness.findAll({where:{dated:date,retailer_id:foundRetailer.id},attributes:['id','prod_name','total_units_sold','total_profit','feedback','business_gender','business_age'],order:[['total_units_sold','DESC']]});
-        res.status(200).json({message:"Fetch Success",products:flipkartProducts});
+        const error = new Error("Insufficient Stock.Select a new stock count");
+         error.statusCode = 500;
+         throw error;
       }
-      else
-      {
-        const foundUser=await User.findByPk(req.userId);
-        const foundRetailer=await foundUser.getRetailer({attributes:['id']});
-        platformProducts=await EbayBusiness.findAll({where:{dated:date,retailer_id:foundRetailer.id},attributes:['id','prod_name','total_units_sold','total_profit','feedback','business_gender','business_age'],order:[['total_units_sold','DESC']]});
-      }
-      let cnt=0,male=0,female=0,kids=0,other=0;let topProducts=0;'business_gender','business_age';
-      platformProducts.forEach(i=>{
-        orders+=i.total_units_sold;
-        profit+=i.total_profit;
-        feedback+=i.feedback;
-        if(cnt<10)
-        {
-          topProducts.push({'prodName':i.prod_name,'totalUnits':i.total_units_sold,'total_profit':i.total_profit});
-          cnt++;
-        }
-      });
-      stats={'orders':order,'profit':profit,'feedback':feedback};
-      res.status(200).json({message:"Fetch Success",products:topProducts,stats:stats});
-    }
-    catch(err)
-    {
-      if (!err.statusCode) 
+      foundProduct.offline_retailer_units-=(prodUnits-retailerProduct.units_avail);
+      await foundProduct.save();
+      retailerProduct.units_avail=prodUnits;
+      await retailerProduct.save();
+      res.status(200).json({message:"Units Updated"});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
       {
         err.statusCode = 500;
       }
       next(err);
-    }
   }
 
+}
 
-  //Fetch Charts
-  exports.fetchCharts=async(req,res,next)=>{
-    const platform=req.query.platform;
-    try
-    {
-      const foundUser=await User.findByPk(req.userId);
-      const foundRetailer=await foundUser.getRetailer({attributes:['id']});
-      if(platform=='Amazon')
+/*******************************Fetch Retailer Owned Products**************************************/
+exports.fetchMyProds=async(req,res,next)=>{
+  try
+  {
+    const foundUser=await User.findByPk(req.userId);    
+    const foundRetailer=await foundUser.getRetailer();
+      if(!foundRetailer)
       {
-
+        const error = new Error("Retailer does not exist");
+         error.statusCode = 404;
+         throw error;
       }
+      const retailerProds=await foundRetailer.getRetailerProducts();let arr=[];
+      for(let i=0;i<retailerProds.length;i++)
+      {
+        let el=retailerProds[i];
+        const foundProd=await Product.findByPk(el.productId);
+        const regionStats=await RegionRetailer.findAll({where:{retailerProductId:el.id}});
+        let obj={regionStats:regionStats,productInfo:foundProd,stats:el};
+        arr.push(obj);
+      }
+      res.status(200).json({message:"Retailer Owned Products Fetched",arr:arr});
 
-
-    }
-    catch(err)
-    {
-      if (!err.statusCode) 
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
       {
         err.statusCode = 500;
       }
       next(err);
-    }
   }
+}
+
+/************************Retailer Finding their most popular products ***********************/
+
+exports.fetchMyMostPopProd=async(req,res,next)=>{
+  try
+  {
+    const foundUser=await User.findByPk(req.userId);    
+    const foundRetailer=await foundUser.getRetailer();
+      if(!foundRetailer)
+      {
+        const error = new Error("Retailer does not exist");
+         error.statusCode = 404;
+         throw error;
+      }
+      const retailerProds=await foundRetailer.getRetailerProducts({order:[['units_sold','DESC']]});let arr=[];
+      for(let i=0;i<retailerProds.length;i++)
+      {
+        let el=retailerProds[i];
+        const foundProd=await Product.findByPk(el.productId);
+        const regionStats=await RegionRetailer.findAll({where:{retailerProductId:el.id}});
+        let obj={regionStats:regionStats,productInfo:foundProd,stats:el};
+        arr.push(obj);
+      }
+      res.status(200).json({message:"Retailer Owned Popular Products Fetched",arr:arr});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+      {
+        err.statusCode = 500;
+      }
+      next(err);
+  }
+}
+
+
+/**************************Fetch Product Region Stats *********************************************/
+exports.fetchProdRegionStats=async(req,res,next)=>{
+  const prodId=req.params.prodId;
+  try{
+    const foundUser=await User.findByPk(req.userId);    
+    const foundRetailer=await foundUser.getRetailer();
+      if(!foundRetailer)
+      {
+        const error = new Error("Retailer does not exist");
+         error.statusCode = 404;
+         throw error;
+      }
+      const retailerProduct=await RetailerProduct.findOne({where:{retailerId:foundRetailer.id,productId:prodId}});
+      const regions=await RegionRetailer.findAll({where:{retailerProductId:retailerProduct.id}});
+      res.status(200).json({message:"RegionStatsFetched",regionStats:regions});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+      {
+        err.statusCode = 500;
+      }
+      next(err);
+  }
+}
+
+/*************************Update Region Wise-Sale Information ********************************/
+exports.updateRegionalSaleInfo=async(req,res,next)=>{
+  const prodId=req.body.prodId;
+  const regionId=req.body.regionId;
+  const price=+req.body.price;
+  const sold_count=+req.body.unitsSold;
+  const returned_count=+req.body.unitsReturned;
+  const expired_count=+req.body.unitsExpired;
+  const OOS=req.body.OOS;
+  const in_sale=req.body.inSale;
+  try
+  {
+    const foundUser=await User.findByPk(req.userId);    
+    const foundRetailer=await foundUser.getRetailer();
+      if(!foundRetailer)
+      {
+        const error = new Error("Retailer does not exist");
+         error.statusCode = 404;
+         throw error;
+      }
+    const retailerProd=await RetailerProduct.findOne({where:{retailerId:foundRetailer.id,productId:prodId}});
+    const retailRegion=await RegionRetailer.findOne({where:{retailerProductId:retailerProd.id,regionId:regionId}});
+    const product=await Product.findByPk(prodId,{attributes:['id','units_sold_total']});
+    product.units_sold_total+=sold_count;
+    retailRegion.regional_price=price;
+    retailRegion.sold_count+=sold_count;
+    retailRegion.returned_count+=returned_count;
+    retailRegion.expired_count+=expired_count;
+    retailRegion.out_of_stock=OOS;
+    retailRegion.in_sale=in_sale;
+    retailerProd.units_sold+=sold_count;
+    await product.save();
+    await retailerProd.save();
+    await retailRegion.save();
+    res.status(200).json({message:"Regional Sales Updated"});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+      {
+        err.statusCode = 500;
+      }
+      next(err);    
+  }
+}
+
+
+
+
+
+
   
-
-
