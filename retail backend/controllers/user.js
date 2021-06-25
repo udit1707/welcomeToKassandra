@@ -86,7 +86,7 @@ exports.login=async (req,res,next)=>{
   }
 
 
-  //Get Route to fetch Employee
+  //Get Route to fetch Employers
   exports.fetchEmployer=async(req,res,next)=>{
       try{
         const employers=await Employer.findAll({attributes:['id','org_name']});let id=[],name=[];

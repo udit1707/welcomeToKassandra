@@ -25,6 +25,9 @@ const Retailer = sequelize.define('retailer', {
       return this.setDataValue("desc", JSON.stringify(value));
   }
 },
+employee_happ_index:Sequelize.FLOAT,
+total_thumbs:Sequelize.INTEGER,
+sum_thumb:Sequelize.INTEGER
 });
 
 module.exports = Retailer;

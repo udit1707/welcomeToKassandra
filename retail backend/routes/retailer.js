@@ -35,5 +35,13 @@ router.get('/prodbyPop',isAuth,retailerController.fetchProdByPop);
 /******************************Region-Wise  Similar Product PriceAnalysis**************************************************/
 router.get('/regionalPriceAnalysis/:prodId',isAuth,retailerController.similarProductPrice);
 
+/****************************SMART PRICE Predictor********************************/
+router.get('/price/:prodId',isAuth,retailerController.predictPrice);
+
+/*****************************Fetch Employees ************************************/
+router.get('/allEmployees',isAuth, retailerController.fetchRetaEmployees);
+
+/*******************Fetch Top Perfoming Employees ******************************/
+router.get('/topEmployees',isAuth,retailerController.fetchTopEmployees);
 
 module.exports=router;

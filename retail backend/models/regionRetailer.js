@@ -10,7 +10,7 @@ const RegionRetailer = sequelize.define('regionRetailer', {
     primaryKey: true
   },
   regional_price:Sequelize.INTEGER,
-  region:Sequelize.STRING,
+  map_id:Sequelize.STRING,
   stock_count:{type:Sequelize.INTEGER,defaultValue:0},
   sold_count:{type:Sequelize.INTEGER,defaultValue:0},
   returned_count:{type:Sequelize.INTEGER,defaultValue:0},

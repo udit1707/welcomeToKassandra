@@ -25,6 +25,7 @@ const Employee = sequelize.define('employee', {
       return this.setDataValue("desc", JSON.stringify(value));
   }
 },
+transactions_total:Sequelize.INTEGER
 });
 
 module.exports = Employee;
