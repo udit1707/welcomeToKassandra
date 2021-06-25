@@ -122,12 +122,12 @@ exports.fetchNewProducts=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
-    const allProducts=await foundManufacturer.getProducts({attributes:['id','prod_name','serial_no','units_avail',"offline_retailer_units","amazon_units","ebay_units","flipkart_units","units_sold_total","categoryId"]});
+    const allProducts=await foundManufacturer.getProducts({attributes:['id','image','prod_name','serial_no','units_avail',"offline_retailer_units","amazon_units","ebay_units","flipkart_units","units_sold_total","categoryId"]});
 for(let i=0;i<allProducts.length;i++)
 {
   let element=allProducts[i];
       const foundCategory=await Category.findByPk(element.categoryId,{attributes:['id','category_name']});
-      obj={'id':element.id,'prodName':element.prod_name,'SNO':element.serial_no,'unitsAvailable':element.units_avail,'retailerStock':element.offline_retailer_units,'amazonStock':element.amazon_units,'ebayStock':element.ebay_units,'flipkarStock':element.flipkart_units,'category':foundCategory.category_name};
+      obj={'id':element.id,'prodName':element.prod_name,'image':element.image,'SNO':element.serial_no,'unitsAvailable':element.units_avail,'retailerStock':element.offline_retailer_units,'amazonStock':element.amazon_units,'ebayStock':element.ebay_units,'flipkarStock':element.flipkart_units,'category':foundCategory.category_name};
       products.push(obj);
     }
     res.status(200).json({message:"Products Fetched",products:products});   
@@ -234,12 +234,12 @@ exports.fetchProductRetailer=async(req,res,next)=>{
     {
       let element=foundProductRetailers[i];
     //foundProductRetailers.forEach(async(element)=>{
-      const foundRetailer=await Retailer.findByPk(element.retailerId);
-      const foundRegions=await RegionRetailer.findAll({where:{retailerProductId:element.id }});
+      const foundRetailer=await Retailer.findByPk(element.retailerId,{attributes:['id','org_name','email','mobile','address','city','state']});
+      const foundRegions=await RegionRetailer.findAll({where:{retailerProductId:element.id },attributes:['id','retailerProductId','regional_price','map_id','stock_count','sold_count','returned_count','expired_count','out_of_stock','in_sale']});
       obj={'retailer':foundRetailer,'regions':foundRegions};
       finalarr.push(obj);      
     }
-res.status(200).json({message:"Product Analysis Fetched",RetailerReg:finalarr});
+res.status(200).json({message:"Product Retailers and Regions of Business Fetched",RetailerReg:finalarr});
   }
   catch(err)
   {
@@ -270,12 +270,12 @@ exports.fetchTopRetailers=async(req,res,next)=>{
       for(let i=0;i<foundProductRetailers.length;i++)
       {
         let element=foundProductRetailers[i];  
-        const foundRetailer=await Retailer.findByPk(element.retailerId);
-        const foundRegions=await RegionRetailer.findAll({where:{retailerProductId:element.id }});
+        const foundRetailer=await Retailer.findByPk(element.retailerId,{attributes:['id','org_name','email','mobile','address','city','state']});
+        const foundRegions=await RegionRetailer.findAll({where:{retailerProductId:element.id },attributes:['id','retailerProductId','regional_price','map_id','stock_count','sold_count','returned_count','expired_count','out_of_stock','in_sale']});
         obj={'retailer':foundRetailer,'regions':foundRegions};
         finalarr.push(obj);      
     }
-res.status(200).json({message:"Product Analysis Fetched",RetailerReg:finalarr});
+res.status(200).json({message:"Top 5 retailers for the product Fetched",RetailerReg:finalarr});
   }
   catch(err)
   {
@@ -298,7 +298,7 @@ exports.fetchTopProducts=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
-    const manfProducts=await foundManufacturer.getProducts({limit:10,order:[['units_sold_total','DESC']]});
+    const manfProducts=await foundManufacturer.getProducts({limit:10,order:[['units_sold_total','DESC']],attributes:['id','image','prod_name','serial_no','units_avail',"offline_retailer_units","amazon_units","ebay_units","flipkart_units","units_sold_total"]});
     res.status(200).json({message:"Top Products Fetched",products:manfProducts});    
   }
   catch(err)
@@ -322,7 +322,7 @@ exports.fetchLeastProducts=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
-    const manfProducts=await foundManufacturer.getProducts({limit:10,order:[['units_sold_total','ASC']]});
+    const manfProducts=await foundManufacturer.getProducts({limit:10,order:[['units_sold_total','ASC']],attributes:['id','image','prod_name','serial_no','units_avail',"offline_retailer_units","amazon_units","ebay_units","flipkart_units","units_sold_total"]});
     res.status(200).json({message:"Least Selling Products Fetched",products:manfProducts});    
   }
   catch(err)
@@ -348,7 +348,7 @@ exports.fetchManEmployees=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
-    const employees=await foundManufacturer.getEmployees();
+    const employees=await foundManufacturer.getEmployees({attributes:['id','first_name','last_name','email','transactions_total']});
     res.status(200).json({message:"Manufacturer Employees Fetched!",employees:employees});
 
   }
@@ -361,4 +361,31 @@ exports.fetchManEmployees=async(req,res,next)=>{
     next(err);
   }
 }
+
+/*******************Fetch Top Perfoming Employees ******************************/
+exports.fetchTopEmployees=async(req,res,next)=>{
+  try{
+    const foundUser=await User.findByPk(req.userId,{attributes:['id']});
+    const foundManufacturer=await foundUser.getManufacturer({attributes:['id']});
+    if(!foundManufacturer)
+    {
+      const error = new Error("Manufacturer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const employees=await foundManufacturer.getEmployees({limit:5,order:[['transactions_total','DESC']],attributes:['id','first_name','last_name','email','transactions_total']});
+    res.status(200).json({message:"Manufacturer Employees Fetched!",employees:employees});
+
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+    {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
+
 

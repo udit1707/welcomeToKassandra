@@ -12,6 +12,7 @@ const RetailerProduct = sequelize.define('retailerProduct', {
   prod_name:Sequelize.STRING,
   units_avail:Sequelize.INTEGER,
   units_sold:Sequelize.INTEGER,
-  retailer:Sequelize.STRING  
+  retailer:Sequelize.STRING,
+  image:Sequelize.STRING  
 });
 module.exports = RetailerProduct;

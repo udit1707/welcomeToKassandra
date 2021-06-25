@@ -34,4 +34,5 @@ router.get('/inloss-products',isAuth,manufacturerController.fetchLeastProducts);
 
 router.get('/employees',isAuth, manufacturerController.fetchManEmployees);
 
+router.get('/topEmployees',isAuth,manufacturerController.fetchTopEmployees)
 module.exports=router;

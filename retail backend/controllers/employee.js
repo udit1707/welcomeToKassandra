@@ -6,6 +6,9 @@ const EmployeeManufacturer=require('../models/employeeManufacturer');
 const EmployeeRetailer=require('../models/employeeRetailer');
 const Employee=require('../models/employee');
 const Employer = require('../models/employer');
+const ProductTransaction=require('../models/productTransaction');
+const RetailerProduct = require('../models/retailerProduct');
+const Product = require('../models/product');
 
 /***************************************NEW Employee**************************************/
 exports.postNewEmployee=async(req,res,next)=>{
@@ -27,20 +30,21 @@ exports.postNewEmployee=async(req,res,next)=>{
         }
         const hashedPwd=await bcrypt.hash(password,12);
         const newUser=await User.create({k_PID:kassandraPortalID,password:hashedPwd,role:'Employee'});
-        const employer=await Employer.findByPk(employerId,{attributes:['temp_id','type','org_name']});
+        const employer=await Employer.findByPk(employerId,{attributes:['id','temp_id','type','org_name']});
         if(employer)
         {
         const newEmployee=await newUser.createEmployee({first_name:firstName,last_name:lastName,email:email,org_name:employer.org_name,mobile:mobile});
         if(employer.type=='manufacturer')
         {
-          const manuf=await Manufacturer.findByPk(employer.temp_id);
+          const manuf=await Manufacturer.findByPk(employer.temp_id,{attributes:['id']});
           await manuf.addEmployee(newEmployee,{through:EmployeeManufacturer});
         }
         else
         {
-          const retail=await Retailer.findByPk(employer.temp_id);
+          const retail=await Retailer.findByPk(employer.temp_id,{attributes:['id']});
           await retail.addEmployee(newEmployee,{through:EmployeeRetailer});
-        }     
+        }   
+        await employer.addEmployee(newEmployee);
       }
       else
       {
@@ -60,3 +64,199 @@ exports.postNewEmployee=async(req,res,next)=>{
         next(err);
       }
   }
+
+
+/**********************************Fetch Own Details *************************************/
+exports.fetchOwnDetails=async(req,res,next)=>{
+  try
+  {
+    const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
+    const foundEmployee=await foundUser.getEmployee({attributes:['id','first_name','last_name','email','mobile','transactions_total','employerId']});
+    if(!foundEmployee)
+    {
+      const error = new Error("Retailer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const employer=await Employer.findByPk(foundEmployee.employerId,{attributes:['id','type','temp_id']});
+    let domain,employerDetails;
+    domain="Manufacturer";
+    if(employer.type=='retailer')
+    { 
+      employerDetails=await Retailer.findByPk(employer.temp_id,{attributes:['id','org_name','email','address','employee_happ_index']});
+      domain="Retailer";
+    }
+    else
+    {
+      employerDetails=await Manufacturer.findByPk(employer.temp_id,{attributes:['id','org_name','email','address','employee_happ_index']})
+    }
+    res.status(200).json({message:"Employee fetched",employee:foundEmployee,employer:employerDetails,domain:domain});
+}
+  catch(err)
+  {
+    if (!err.statusCode) 
+        {
+          err.statusCode = 500;
+        }
+        next(err);
+  }
+}
+
+/********************************************Post thumbs up *******************************/
+exports.postEmployeeThumbsUp=async(req,res,next)=>{
+  try
+  {
+    const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
+    const foundEmployee=await foundUser.getEmployee({attributes:['id','employerId']});
+    if(!foundEmployee)
+    {
+      const error = new Error("Retailer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const employer=await Employer.findByPk(foundEmployee.employerId,{attributes:['id','type','temp_id']});
+    let employerDetails;
+    if(employer.type=="retailer")
+    { 
+      employerDetails=await Retailer.findByPk(employer.temp_id,{attributes:['id','employee_happ_index','total_thumbs','sum_thumb']});
+    }
+    else
+    {
+      employerDetails=await Manufacturer.findByPk(employer.temp_id,{attributes:['id','employee_happ_index','total_thumbs','sum_thumb']});
+    }
+    employerDetails.total_thumbs+=1;
+    employerDetails.sum_thumb+=1;
+    employerDetails.employee_happ_index=(employerDetails.sum_thumb)/(employerDetails.total_thumbs);
+    await employerDetails.save();
+    res.status(200).json({message:"Thumb Updated!"});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+        {
+          err.statusCode = 500;
+        }
+        next(err);    
+  }
+}
+
+/*********************************POST Thumbs Down **************************************/
+exports.postEmployeeThumbsDown=async(req,res,next)=>{
+  try
+  {
+    const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
+    const foundEmployee=await foundUser.getEmployee({attributes:['id','employerId']});
+    if(!foundEmployee)
+    {
+      const error = new Error("Retailer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const employer=await Employer.findByPk(foundEmployee.employerId,{attributes:['id','type','temp_id']});
+    let employerDetails;
+    if(employer.type=="retailer")
+    { 
+      employerDetails=await Retailer.findByPk(employer.temp_id,{attributes:['id','employee_happ_index','total_thumbs','sum_thumb']});
+    }
+    else
+    {
+      employerDetails=await Manufacturer.findByPk(employer.temp_id,{attributes:['id','employee_happ_index','total_thumbs','sum_thumb']});
+    }
+    employerDetails.total_thumbs+=1;
+    employerDetails.sum_thumb-=1;
+    employerDetails.employee_happ_index=(employerDetails.sum_thumb)/(employerDetails.total_thumbs);    
+    await employerDetails.save();
+    res.status(200).json({message:"Thumb Updated!"});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+        {
+          err.statusCode = 500;
+        }
+        next(err);    
+  }
+}
+
+/***********************************Generate Product List ************************************/
+exports.fetchProductList=async(req,res,next)=>{
+  try
+  {
+    const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
+    const foundEmployee=await foundUser.getEmployee({attributes:['id','employerId']});
+    if(!foundEmployee)
+    {
+      const error = new Error("Retailer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const employer=await Employer.findByPk(foundEmployee.employerId,{attributes:['id','type','temp_id']});
+    let products;
+    if(employer.type=='retailer')
+    {
+      products=await RetailerProduct.findAll({where:{retailerId:employer.temp_id},attributes:['retailerId','prod_name','productId']});
+    }
+    else
+    {
+      products=await Product.findAll({where:{manufacturerId:employer.temp_id},attributes:['manufacturerId','prod_name','id']});
+    }
+    res.status(200).json({message:"Products Fetched",products:products});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+        {
+          err.statusCode = 500;
+        }
+        next(err);    
+  }
+}
+
+/************************************POST A New Transaction **********************************/
+exports.postTransaction=async(req,res,next)=>{
+  const transactionNo=req.body.transNo;
+  const feedback=req.body.feedback;
+  const prodId=req.body.prodId;
+  try
+  {
+    const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
+    const foundEmployee=await foundUser.getEmployee({attributes:['id','employerId','transactions_total']});
+    if(!foundEmployee)
+    {
+      const error = new Error("Retailer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const newTransaction=await foundEmployee.createProductTransaction({transaction_no:transactionNo,prodId:prodId,feedback:feedback})
+    foundEmployee.transactions_total+=1;
+    await foundEmployee.save();
+    res.status(200).json({message:"Transaction Posted"});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+        {
+          err.statusCode = 500;
+        }
+        next(err);    
+  }
+}
+
+
+/******************************************JOB Recommender ****************************************/
+exports.fetchJobs=async(req,res,next)=>{
+  try
+  {
+    const recommendedManf=await Manufacturer.findAll({limit:5,order:[['employee_happ_index','DESC']],attributes:['id','org_name','email','address','employee_happ_index']});
+    const recommendRetail=await Retailer.findAll({limit:5,order:[['employee_happ_index','DESC']],attributes:['id','org_name','email','address','employee_happ_index']})
+    res.status(200).json({message:"Recommendations Fetched",Manufacturer:recommendedManf,Retailer:recommendRetail});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+        {
+          err.statusCode = 500;
+        }
+        next(err);    
+  }
+}

@@ -2,15 +2,17 @@ const Sequelize=require('sequelize');
 
 const sequelize=require('../util/database');
 
-const Region = sequelize.define('region', {
+const ProductTransaction = sequelize.define('productTransaction', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true
   },
-  region:Sequelize.STRING,
-  map_id:Sequelize.STRING
+  feedback:Sequelize.STRING,
+  transaction_no:Sequelize.INTEGER,
+  prodId:Sequelize.INTEGER
+  
 });
 
-module.exports = Region;
+module.exports = ProductTransaction;
