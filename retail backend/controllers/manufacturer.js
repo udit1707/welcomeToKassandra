@@ -87,6 +87,13 @@ exports.postNewProduct=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
+    const foundCategory=await Category.findOne({where:{category_name:category},attributes:['id','category_name']});
+    if(!foundCategory)
+    {
+      const error = new Error("Category does not exist");
+      error.statusCode = 404;
+      throw error;
+    }
     const containerClient = blobServiceClient.getContainerClient(`${process.env.AZURE_CONTAINER_NAME}`);
     const blobName = image.originalname; 
     //getBlobName(image.originalname);
@@ -104,7 +111,6 @@ exports.postNewProduct=async(req,res,next)=>{
        throw error;
     }
     const newProduct=await foundManufacturer.createProduct({prod_name:prodName,serial_no:snNo,desc:desc,units_avail:units,image:url});
-    const foundCategory=await Category.findOne({where:{category_name:category},attributes:['id','category_name']});
     await foundCategory.addProduct(newProduct);  
     res.status(200).json({message:"Product Added!"});
   }
