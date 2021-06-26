@@ -21,6 +21,9 @@ router.get('/products',isAuth,employeeController.fetchProductList);
 /************************************POST A New Transaction **********************************/
 router.post('/newTransaction',isAuth,employeeController.postTransaction);
 
+/***************************************Fetch Recent Transactions **********************************/
+router.get('/myTransactions',isAuth,employeeController.fetchMyTransactions);
+
 /******************************************JOB Recommender ****************************************/
 router.get('/recommendations',employeeController.fetchJobs);
 

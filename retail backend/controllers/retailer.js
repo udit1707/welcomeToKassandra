@@ -414,6 +414,12 @@ exports.updateRegionalSaleInfo=async(req,res,next)=>{
       }
     const retailerProd=await RetailerProduct.findOne({where:{retailerId:foundRetailer.id,productId:prodId},attributes:['id','retailerId','productId','units_sold']});
     const retailRegion=await RegionRetailer.findOne({where:{retailerProductId:retailerProd.id,regionId:regionId},attributes:['id','regional_price','sold_count','returned_count','expired_count','out_of_stock','in_sale']});
+    if(!retailRegion)
+    {
+      const error = new Error("Region not alloted to the product");
+      error.statusCode = 404;
+      throw error;
+    }
     const product=await Product.findByPk(prodId,{attributes:['id','units_sold_total']});
     product.units_sold_total+=sold_count;
     retailRegion.regional_price=price;
@@ -443,11 +449,12 @@ exports.updateRegionalSaleInfo=async(req,res,next)=>{
 
 /********************************Predict Price for a product *********************/
 exports.predictPrice=async(req,res,next)=>{
-  const region=req.body.regionId;
-  const category=req.body.category;
+  const region=+req.params.regionId;
+  const category=+req.params.categoryId;
+  const target=+req.params.targetSales;
  try
   {
-    const regionId=0,sold_count=1000,expired_count=19,category=0,returned_count=10;
+    const expired_count=48,returned_count=35;
     const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
     const foundRetailer=await foundUser.getRetailer({attributes:['id']});
     if(!foundRetailer)
@@ -458,8 +465,8 @@ exports.predictPrice=async(req,res,next)=>{
     }
     let data=[];
     data.push({"regional_price": 1000,
-    "map_id": regionId,
-    "sold_count": sold_count,
+    "map_id": region,
+    "sold_count": target,
     "returned_count": returned_count,
     "expired_count": expired_count,
     "Category": category});

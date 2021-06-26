@@ -12,6 +12,7 @@ const {BlobServiceClient} = require('@azure/storage-blob');
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
 const { Readable } = require('stream');
+const Product = require('../models/product');
 const getBlobName = originalName => {
   const identifier = Math.random().toString().replace(/0\./, '');
   return `${identifier}-${originalName}`;
@@ -79,6 +80,13 @@ exports.postNewProduct=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
+    const foundPRod=await Product.findOne({where:{serial_no:snNo},attributes:['id','serial_no']});
+    if(foundPRod)
+    {
+      const error = new Error("Serial Number already exists. Check the product details and try again");
+       error.statusCode = 404;
+       throw error;
+    }
     const containerClient = blobServiceClient.getContainerClient(`${process.env.AZURE_CONTAINER_NAME}`);
     const blobName = image.originalname; 
     //getBlobName(image.originalname);
@@ -127,7 +135,7 @@ for(let i=0;i<allProducts.length;i++)
 {
   let element=allProducts[i];
       const foundCategory=await Category.findByPk(element.categoryId,{attributes:['id','category_name']});
-      obj={'id':element.id,'prodName':element.prod_name,'image':element.image,'SNO':element.serial_no,'unitsAvailable':element.units_avail,'retailerStock':element.offline_retailer_units,'amazonStock':element.amazon_units,'ebayStock':element.ebay_units,'flipkarStock':element.flipkart_units,'category':foundCategory.category_name};
+      obj={'id':element.id,'prodName':element.prod_name,'image':element.image,'SNO':element.serial_no,'unitsAvailable':element.units_avail,'retailerStock':element.offline_retailer_units,'amazonStock':element.amazon_units,'ebayStock':element.ebay_units,'flipkarStock':element.flipkart_units,'sold':element.units_sold_total,'category':foundCategory.category_name};
       products.push(obj);
     }
     res.status(200).json({message:"Products Fetched",products:products});   
@@ -160,6 +168,12 @@ exports.updateStock=async(req,res,next)=>{
        throw error;
     }
     const foundProduct=await foundManufacturer.getProducts({where:{id:prodId},attributes:['id','offline_retailer_units','amazon_units','ebay_units','flipkart_units','units_avail']});
+    if(!foundProduct[0])
+    {
+       const error = new Error("Product does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
     //console.log(offline_retailer_units+amazon_units+ebay_units+flipkart_units);
     //console.log(foundProduct[0].units_avail);
     if(offline_retailer_units+amazon_units+ebay_units+flipkart_units>foundProduct[0].units_avail)
@@ -192,7 +206,7 @@ exports.postProdUnits=async(req,res,next)=>{
   try
   {
     const prodId=req.body.prodId;
-    const units=+req.body.newUnits;
+    const units=+req.body.unitsToAdd;
     const foundUser=await User.findByPk(req.userId);
     const foundManufacturer=await foundUser.getManufacturer();
     if(!foundManufacturer)
@@ -201,8 +215,15 @@ exports.postProdUnits=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
-    const foundProduct=await foundManufacturer.getProducts({where:{id:prodId},attributes:['id','units_avail']});
-    foundProduct[0].units_avail=units;
+    let foundProduct;
+     foundProduct=await foundManufacturer.getProducts({where:{id:prodId},attributes:['id','units_avail']});
+    if(!foundProduct[0])
+    {
+      const error = new Error("Product does not exist");
+       error.statusCode = 404;
+       throw error;
+    }    
+     foundProduct[0].units_avail+=units;
     await foundProduct[0].save();
     res.status(200).json({message:"Product Units Updated!"});
   }

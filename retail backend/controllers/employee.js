@@ -194,11 +194,11 @@ exports.fetchProductList=async(req,res,next)=>{
     let products;
     if(employer.type=='retailer')
     {
-      products=await RetailerProduct.findAll({where:{retailerId:employer.temp_id},attributes:['retailerId','prod_name','productId']});
+      products=await RetailerProduct.findAll({where:{retailerId:employer.temp_id},attributes:['retailerId','image','prod_name','productId']});
     }
     else
     {
-      products=await Product.findAll({where:{manufacturerId:employer.temp_id},attributes:['manufacturerId','prod_name','id']});
+      products=await Product.findAll({where:{manufacturerId:employer.temp_id},attributes:['manufacturerId','image','prod_name','id']});
     }
     res.status(200).json({message:"Products Fetched",products:products});
   }
@@ -220,10 +220,17 @@ exports.postTransaction=async(req,res,next)=>{
   try
   {
     const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
-    const foundEmployee=await foundUser.getEmployee({attributes:['id','employerId','transactions_total']});
+    const foundEmployee=await foundUser.getEmployee({attributes:['id']});
     if(!foundEmployee)
     {
       const error = new Error("Retailer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const found=await ProductTransaction.findOne({where:{transaction_no:transactionNo},attributes:['id','transaction_no']});
+    if(found)
+    {
+      const error = new Error("Transaction Number already registered");
        error.statusCode = 404;
        throw error;
     }
@@ -258,5 +265,36 @@ exports.fetchJobs=async(req,res,next)=>{
           err.statusCode = 500;
         }
         next(err);    
+  }
+}
+
+/***************************************Fetch Recent Transactions **********************************/
+exports.fetchMyTransactions=async(req,res,next)=>{
+  try
+  {
+    const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
+    const foundEmployee=await foundUser.getEmployee({attributes:['id']});
+    if(!foundEmployee)
+    {
+      const error = new Error("Retailer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    let arr=[];
+    const foundTransactions=await foundEmployee.getProductTransactions({attributes:['id','feedback','transaction_no','prodId']});
+    for(let i=0;i<foundTransactions.length;i++)
+    {
+      const product=await Product.findByPk(foundTransactions[i].prodId,{attributes:['id','prod_name','image','serial_no']});
+      let obj={product:product,transaction:foundTransactions[i]};
+      arr.push(obj);    }
+    res.status(200).json({message:"Transactions Fetched",arr:arr});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+    {
+      err.statusCode = 500;
+    }
+    next(err); 
   }
 }
