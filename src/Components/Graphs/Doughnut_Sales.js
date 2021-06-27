@@ -42,12 +42,12 @@ const Doughnut_Sales = props => {
         <div style={{width:'100%',justifyContent:'center',display:'flex'}}>   
         <text style={{color:'#424040',fontSize:16,fontFamily:'Segoe UI Semibold'}}>{props.title}</text>
         </div>
-        <div style={{width:'100%',height:'20%',marginTop:'3%',justifyContent:'center',display:'flex'}}>
-            <Doughnut  width={Wwidth*0.15} height={Wwidth*0.15}
-            style={{}}draggable={true}
+        <div style={{width:'100%',height:Wheight*0.4,marginTop:'3%',justifyContent:'center',display:'flex'}}>
+            <Doughnut  
+            style={{backgroundColor:'white',width:Wwidth*0.15,height:Wwidth*0.15}}draggable={true}
           data={state}
           options={{
-            cutout: '55%',
+            cutout: '52%',
               responsive:true,
               maintainAspectRatio:false,
             title:{

@@ -45,15 +45,18 @@ const Preview = props => {
             height:'100%'
         }}>
             <div style={{height:'30%',width:'100%'}}>
-            <text style={{color:'#707070',fontSize:18,fontFamily:'Segoe UI Bold'}}>{props.previewTitle}</text>
+            <text style={{color:'#707070',fontSize:15,fontFamily:'Segoe UI Bold'}}>{props.previewTitle}</text>
             </div>
             <div style={{width:'100%',height:'70%',flexDirection:'row',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-            <div style={{width:'60%'}}><text style={{color:'#707070',fontSize:18,fontFamily:'Segoe UI Bold'}}>{props.previewTitleData}</text></div>
+            <div style={{width:'60%'}}><text style={{color:'#707070',fontSize:15,fontFamily:'Segoe UI Bold'}}>{props.previewTitleData}</text></div>
             <div style={{width:'40%',flexDirection:'row',display:'flex',alignItems:'center'}}>
             <text style={{color:props.analyticsColor,fontSize:16,fontFamily:'Segoe UI Semibold'}}>{props.previewAnalytics}</text>
             <div style={{
-            width:Wwidth/(1920/25),
-            height:Wwidth/(1920/25),
+            width:Wwidth/(1920/20),
+            height:Wwidth/(1920/20),
+            alignItems:'center',
+            justifyContent:'center',
+            display:'flex',
             marginLeft:'8%',
             padding:0
             }}>

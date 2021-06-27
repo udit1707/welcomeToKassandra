@@ -13,12 +13,14 @@ const NavHeader = props => {
         flexDirection:'row',
         display:'flex',
         justifyContent:'flex-start',
+        boxShadow:'3px 3px 5px #9E9E9E',
         alignItems:'center',
-        paddingLeft:'5%'
+        paddingLeft:'5%',
+        cursor:'auto'
     }} >
        <a onMouseEnter={()=>setHover('h')} onMouseLeave={()=>setHover(null)} onMouseUpCapture={()=>history.push('/Dashboard')}  style={{
            width:'6.5%',
-           backgroundColor:location.pathname === '/'?'#6468DB':hover === 'h'?'#5054C7':'',
+           backgroundColor:location.pathname === '/Dashboard'?'#6468DB':hover === 'h'?'#5054C7':'',
            height:'100%',
            display:'flex',
            justifyContent:'center',
@@ -26,9 +28,12 @@ const NavHeader = props => {
         >
             <text  style={{fontFamily:'Segoe UI',userSelect:'none',color:'white',fontSize:15}}>Home</text>
         </a>
-        <div onMouseUpCapture={()=>history.push('/products')} onMouseEnter={()=>setHover('pd')} onMouseLeave={()=>setHover(null)} style={{
+        <div onMouseUpCapture={()=>history.push('/products/unitSales')} onMouseEnter={()=>setHover('pd')} onMouseLeave={()=>setHover(null)} style={{
            width:'6.5%',
-           backgroundColor:location.pathname === '/products' ? '#6468DB':hover === 'pd'?'#5054C7':'',
+           backgroundColor:location.pathname === '/products'||
+           location.pathname === '/products/Stocks'||
+           location.pathname === '/products/allotStocks'||
+           location.pathname === '/products/unitSales'? '#6468DB':hover === 'pd'?'#5054C7':'',
            height:'100%',
            display:'flex',
            justifyContent:'center',
@@ -36,9 +41,9 @@ const NavHeader = props => {
         >
             <text style={{fontFamily:'Segoe UI',userSelect:'none',color:'white',fontSize:15}}>Products</text>
         </div>
-        <div onMouseEnter={()=>setHover('l')} onMouseLeave={()=>setHover(null)} style={{
+        <div onMouseUpCapture={()=>history.push('/listed')} onMouseEnter={()=>setHover('l')} onMouseLeave={()=>setHover(null)} style={{
            width:'6.5%',
-           backgroundColor:hover === 'l' ?'#5054C7':'',
+           backgroundColor:location.pathname === '/listed' ?'#6468DB': hover === 'l' ?'#5054C7':'',
            height:'100%',
            display:'flex',
            justifyContent:'center',

@@ -19,10 +19,13 @@
 .li-jumbo {
   background-color: transparent;
   padding: 5%;
+  
 }
 .li-h1 {
   text-align: left;
   font-weight: bold;
+  box-shadow: 0 0 0 0px;
+  background: transparent;
 }
 .span-fade-in {
   opacity: 1;

@@ -38,19 +38,7 @@ const ProductsSoldItem = props => {
     <text style={{fontFamily:'Segoe UI Semibold',fontSize:13.5,color:'#3E42B5'}}>{props.itemTime}</text>
     </div>
     <div style={{width:'14%',alignItems:'center',justifyContent:'center',display:'flex'}}>
-    <div style={{
-        width:Wwidth*0.8/(1920/70),
-        height:Wwidth*0.8/(1920/70),
-        justifyContent:'center',
-        alignItems:'center',
-        borderRadius:Wwidth*.8/(1920/70),
-        boxShadow:"0px 1px 3px #9E9E9E",
-        overflow:'hidden',
-        padding:2,
-        backgroundColor:'#f2f2f2',
-        display:'flex'}}>
-            <img src={props.userSrc} style={{width:'90%',height:'90%'}} />
-        </div> 
+    <text style={{fontFamily:'Segoe UI Semibold',fontSize:13.5,color:'#3E42B5'}}>{props.buyer}</text>
     </div>
     
     <div style={{width:'14%',padding:2,alignItems:'center',justifyContent:'center',display:'flex'}}>

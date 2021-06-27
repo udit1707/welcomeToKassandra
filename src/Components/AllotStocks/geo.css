@@ -1,0 +1,32 @@
+
+.geo-full-width-height {
+    height: 100vh;
+    width: 100%;
+  }
+  
+  .geo-container {
+    width: calc(100% - 32px);
+    height: calc(100% - 32px);
+    padding: 16px;
+  }
+  
+  .geo-no-margin {
+    margin: 0;
+  }
+  
+  .geo-display-flex {
+    display: flex;
+  }
+  
+  .geo-fill {
+    flex: 1;
+  }
+  
+  .geo-center {
+    text-align: center;
+  }
+  
+  .geo-mt16 {
+    margin-top: 16px;
+  }
+  

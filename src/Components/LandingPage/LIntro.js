@@ -8,15 +8,17 @@ import Image from "react-bootstrap/Image";
 import React, { useState, useEffect } from "react";
 import kLogo from "./kLogo.png";
 import "./Landing.css";
+import { useHistory } from "react-router-dom";
 export default function LIntro() {
-  const titles = ["MANUFACTURERS", "DISTRIBUTORS", "RETAILERS", "EMPLOYEES"];
+  const titles = ["MANUFACTURERS", "RETAILERS", "EMPLOYEES"];
   const [visible, setVisible] = useState(true);
   const [titleCount, setTitleCount] = useState(0);
+  const history=useHistory()
   useEffect(() => {
     const interval = setInterval(() => {
       setVisible(visible ? false : true);
       if (visible === false) {
-        setTitleCount((titleCount + 1) % 4);
+        setTitleCount((titleCount + 1) % 3);
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -38,7 +40,7 @@ export default function LIntro() {
                 Kassandra is one of the easiest and feature packed marketing
                 automation apps in the market. Try it out today!
               </p>
-              <Button variant="outline-info" className="li-button">
+              <Button onClick={()=>history.push('/Login',{pressed:'Login'})} variant="outline-info" className="li-button">
                 Try it Now !
               </Button>
             </Jumbotron>

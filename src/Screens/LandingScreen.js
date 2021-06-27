@@ -10,8 +10,7 @@ import { useHistory } from "react-router-dom";
 export default function App() {
   const history=useHistory()
   return (
-    <div>
-      
+    <div style={{cursor:'pointer'}}>      
       <LNavBar />
       <LIntro />
       <LApps />

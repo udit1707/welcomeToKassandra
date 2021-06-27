@@ -18,9 +18,7 @@ export default function LNavBar() {
         <img alt="" src={kLogowhite} width={53.34} />
         KASSANDRA
       </Navbar.Brand>
-      <text onMouseUpCapture={()=>history.push('/Login')}  style={{cursor:'pointer',fontFamily:'Segoe UI Semibold',color:'white',fontSize:18}}> Login  </text>
-      <text  style={{cursor:'pointer',fontFamily:'Segoe UI Semibold',color:'white',fontSize:18}}> /  </text>
-      <text onMouseUpCapture={()=>history.push('/Login')}  style={{cursor:'pointer',fontFamily:'Segoe UI Semibold',color:'white',fontSize:18}}> Sign up  </text>
+     
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
           <Nav.Link href="#features">Option</Nav.Link>
