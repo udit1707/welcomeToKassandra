@@ -9,6 +9,10 @@ const Employer = require('../models/employer');
 const ProductTransaction=require('../models/productTransaction');
 const RetailerProduct = require('../models/retailerProduct');
 const Product = require('../models/product');
+const { default: axios } = require('axios');
+const deepai = require('deepai');
+deepai.setApiKey(process.env.API_KEY_DEEPAI);
+
 
 /***************************************NEW Employee**************************************/
 exports.postNewEmployee=async(req,res,next)=>{
@@ -115,6 +119,12 @@ exports.postEmployeeThumbsUp=async(req,res,next)=>{
        throw error;
     }
     const employer=await Employer.findByPk(foundEmployee.employerId,{attributes:['id','type','temp_id']});
+    if(!employer)
+    {
+      const error = new Error("Given Employer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
     let employerDetails;
     if(employer.type=="retailer")
     { 
@@ -153,6 +163,12 @@ exports.postEmployeeThumbsDown=async(req,res,next)=>{
        throw error;
     }
     const employer=await Employer.findByPk(foundEmployee.employerId,{attributes:['id','type','temp_id']});
+    if(!employer)
+    {
+      const error = new Error("Given Employer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
     let employerDetails;
     if(employer.type=="retailer")
     { 
@@ -296,5 +312,25 @@ exports.fetchMyTransactions=async(req,res,next)=>{
       err.statusCode = 500;
     }
     next(err); 
+  }
+}
+
+/**************************************************Fetch Feedback Sentiments *******************************/
+exports.fetchFeedBackSentiment=async(req,res,next)=>{
+  const feedback=req.query.feedback;
+  try
+  {
+    const sentiment = await deepai.callStandardApi("sentiment-analysis", {
+      text: feedback});
+    console.log(sentiment);
+    res.status(200).json({message:"Sentiment Fetched",sentiment:sentiment.output});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+    {
+      err.statusCode = 500;
+    }
+    next(err);     
   }
 }

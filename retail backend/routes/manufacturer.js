@@ -32,6 +32,9 @@ router.get('/top-products',isAuth,manufacturerController.fetchTopProducts);
 /*************************Fetch Least Selling Products*************************/
 router.get('/inloss-products',isAuth,manufacturerController.fetchLeastProducts);
 
+/**********************Product Sales Analysis ******************************************/
+router.get('/prouct-regional-sales/:prodId',isAuth,manufacturerController.productSalesAnalysis);
+
 router.get('/employees',isAuth, manufacturerController.fetchManEmployees);
 
 router.get('/topEmployees',isAuth,manufacturerController.fetchTopEmployees)

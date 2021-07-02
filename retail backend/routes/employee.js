@@ -27,6 +27,8 @@ router.get('/myTransactions',isAuth,employeeController.fetchMyTransactions);
 /******************************************JOB Recommender ****************************************/
 router.get('/recommendations',employeeController.fetchJobs);
 
+/**************************************************Fetch Feedback Sentiments *******************************/
+router.get('/getSentiment',employeeController.fetchFeedBackSentiment);
 
 
 module.exports=router;
