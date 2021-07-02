@@ -13,6 +13,7 @@ const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STR
 const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
 const { Readable } = require('stream');
 const Product = require('../models/product');
+const ProductRegion=require('../models/productRegion');
 const getBlobName = originalName => {
   const identifier = Math.random().toString().replace(/0\./, '');
   return `${identifier}-${originalName}`;
@@ -67,6 +68,7 @@ exports.postNewProduct=async(req,res,next)=>{
   const prodName=req.body.prodName;
   const image=req.file;
   const snNo=req.body.snNo;
+  const factory_price=req.body.factoryPrice;
   const category=req.body.category;
   const desc=req.body.desc;
   const units=+req.body.units;
@@ -110,7 +112,7 @@ exports.postNewProduct=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
-    const newProduct=await foundManufacturer.createProduct({prod_name:prodName,serial_no:snNo,desc:desc,units_avail:units,image:url});
+    const newProduct=await foundManufacturer.createProduct({prod_name:prodName,serial_no:snNo,factory_price:factory_price,desc:desc,units_avail:units,image:url});
     await foundCategory.addProduct(newProduct);  
     res.status(200).json({message:"Product Added!"});
   }
@@ -136,7 +138,7 @@ exports.fetchNewProducts=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
-    const allProducts=await foundManufacturer.getProducts({attributes:['id','image','prod_name','serial_no','units_avail',"offline_retailer_units","amazon_units","ebay_units","flipkart_units","units_sold_total","categoryId"]});
+    const allProducts=await foundManufacturer.getProducts({attributes:['id','image','factory_price','prod_name','serial_no','units_avail',"offline_retailer_units","amazon_units","ebay_units","flipkart_units","units_sold_total","categoryId"]});
 for(let i=0;i<allProducts.length;i++)
 {
   let element=allProducts[i];
@@ -176,7 +178,7 @@ exports.updateStock=async(req,res,next)=>{
     const foundProduct=await foundManufacturer.getProducts({where:{id:prodId},attributes:['id','offline_retailer_units','amazon_units','ebay_units','flipkart_units','units_avail']});
     if(!foundProduct[0])
     {
-       const error = new Error("Product does not exist");
+       const error = new Error("Manufacturer doesn't own this product or the product does not exist. Check details!");
        error.statusCode = 404;
        throw error;
     }
@@ -225,7 +227,7 @@ exports.postProdUnits=async(req,res,next)=>{
      foundProduct=await foundManufacturer.getProducts({where:{id:prodId},attributes:['id','units_avail']});
     if(!foundProduct[0])
     {
-      const error = new Error("Product does not exist");
+      const error = new Error("Manufacturer doesn't own this product or the product does not exist. Check details!");
        error.statusCode = 404;
        throw error;
     }    
@@ -325,7 +327,7 @@ exports.fetchTopProducts=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
-    const manfProducts=await foundManufacturer.getProducts({limit:10,order:[['units_sold_total','DESC']],attributes:['id','image','prod_name','serial_no','units_avail',"offline_retailer_units","amazon_units","ebay_units","flipkart_units","units_sold_total"]});
+    const manfProducts=await foundManufacturer.getProducts({limit:10,order:[['units_sold_total','DESC']],attributes:['id','image','factory_price','prod_name','serial_no','units_avail',"offline_retailer_units","amazon_units","ebay_units","flipkart_units","units_sold_total"]});
     res.status(200).json({message:"Top Products Fetched",products:manfProducts});    
   }
   catch(err)
@@ -349,7 +351,7 @@ exports.fetchLeastProducts=async(req,res,next)=>{
        error.statusCode = 404;
        throw error;
     }
-    const manfProducts=await foundManufacturer.getProducts({limit:10,order:[['units_sold_total','ASC']],attributes:['id','image','prod_name','serial_no','units_avail',"offline_retailer_units","amazon_units","ebay_units","flipkart_units","units_sold_total"]});
+    const manfProducts=await foundManufacturer.getProducts({limit:10,order:[['units_sold_total','ASC']],attributes:['id','image','prod_name','factory_price','serial_no','units_avail',"offline_retailer_units","amazon_units","ebay_units","flipkart_units","units_sold_total"]});
     res.status(200).json({message:"Least Selling Products Fetched",products:manfProducts});    
   }
   catch(err)
@@ -403,6 +405,32 @@ exports.fetchTopEmployees=async(req,res,next)=>{
     const employees=await foundManufacturer.getEmployees({limit:5,order:[['transactions_total','DESC']],attributes:['id','first_name','last_name','email','transactions_total']});
     res.status(200).json({message:"Manufacturer Employees Fetched!",employees:employees});
 
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+    {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
+
+/**********************Product Sales Analysis ******************************************/
+exports.productSalesAnalysis=async(req,res,next)=>{
+  const prodId=req.params.prodId;
+  try{
+    const foundUser=await User.findByPk(req.userId,{attributes:['id']});
+    const foundManufacturer=await foundUser.getManufacturer({attributes:['id']});
+    if(!foundManufacturer)
+    {
+      const error = new Error("Manufacturer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const productRegions=await ProductRegion.findAll({where:{productId:prodId},attributes:['id','total_units_sold','total_units_returned','total_units_expired','map_id']})
+    res.status(200).json({message:"Regional Analysis Fetched",data:productRegions});
   }
   catch(err)
   {

@@ -12,6 +12,7 @@ const Product = sequelize.define('product', {
   prod_name:Sequelize.STRING,
   image:Sequelize.STRING,
   serial_no:Sequelize.STRING,
+  factory_price:Sequelize.INTEGER,
   units_avail:Sequelize.INTEGER,
   offline_retailer_units:Sequelize.INTEGER,
   amazon_units:Sequelize.INTEGER,

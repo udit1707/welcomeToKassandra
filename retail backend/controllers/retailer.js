@@ -12,6 +12,7 @@ const User = require('../models/user');
 const Employer=require('../models/employer');
 const RetailerProduct = require('../models/retailerProduct');
 const RegionRetailer=require('../models/regionRetailer');
+const ProductRegion=require('../models/productRegion');
 const { Op } = require('sequelize');
 const axios=require('axios'); 
 
@@ -74,6 +75,12 @@ exports.postNewProduct=async(req,res,next)=>{
        throw error;
     }
     const foundProduct=await Product.findByPk(prodId,{attributes:['id','prod_name','image','offline_retailer_units']});
+    if(!foundProduct)
+    {
+      const error = new Error("Product does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
     if(prodUnits>foundProduct.offline_retailer_units)
     {
       const error = new Error("Insufficient Stock.Select a new stock count");
@@ -112,7 +119,7 @@ exports.fetchProdByCategory=async(req,res,next)=>{
          throw error;
       }   
       const cat=await Category.findByPk(catId,{attributes:['id','category_name']});
-      const products=await cat.getProducts({attributes:['id','prod_name','serial_no','offline_retailer_units','image','units_sold_total','manufacturerId','categoryId']});
+      const products=await cat.getProducts({attributes:['id','prod_name','factory_price','serial_no','offline_retailer_units','image','units_sold_total','manufacturerId','categoryId']});
       console.log(products);
       for(let i=0;i<products.length;i++)
       {
@@ -149,7 +156,7 @@ exports.fetchProdByPop=async(req,res,next)=>{
          error.statusCode = 404;
          throw error;
       }   
-    const products=await Product.findAll({order:[['units_sold_total','DESC']],attributes:['id','prod_name','serial_no','image','offline_retailer_units','units_sold_total','manufacturerId','categoryId']});
+    const products=await Product.findAll({order:[['units_sold_total','DESC']],attributes:['id','prod_name','factory_price','serial_no','image','offline_retailer_units','units_sold_total','manufacturerId','categoryId']});
     for(let i=0;i<products.length;i++)
     {
       let el=products[i];
@@ -218,7 +225,7 @@ exports.postRegionsandPrice=async(req,res,next)=>{
   try
   {
     const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
-      const foundRetailer=await foundUser.getRetailer({attributes:['id']});
+    const foundRetailer=await foundUser.getRetailer({attributes:['id']});
       if(!foundRetailer)
       {
         const error = new Error("Retailer does not exist");
@@ -226,6 +233,12 @@ exports.postRegionsandPrice=async(req,res,next)=>{
          throw error;
       }
     const retailerProd=await RetailerProduct.findOne({where:{retailerId:foundRetailer.id,productId:prodId},attributes:['id','retailerId','units_avail']});
+    if(!retailerProd)
+    {
+        const error = new Error("Retailer doesn't own this product");
+        error.statusCode = 404;
+        throw error;
+    }
     if(stocks>retailerProd.units_avail)
     {
       const error = new Error("Insufficient Stock.Select a new stock count");
@@ -234,7 +247,9 @@ exports.postRegionsandPrice=async(req,res,next)=>{
     }
     retailerProd.units_avail=retailerProd.units_avail-stocks;
     await retailerProd.save();
-    const region=await Region.findByPk(regionId);
+    const region=await Region.findByPk(regionId,{attributes:['id','map_id']});
+    const product=await Product.findByPk(prodId,{attributes:['id']});
+    await region.addProduct(product,{through:{map_id:region.map_id}});
     await region.addRetailerProduct(retailerProd,{through:{regional_price:price,map_id:region.map_id,stock_count:stocks}});
     res.status(200).json({message:"Product Region Updated"});
   }
@@ -258,16 +273,25 @@ exports.addMoreProdUnits=async(req,res,next)=>{
       const foundRetailer=await foundUser.getRetailer({attributes:['id']});
       if(!foundRetailer)
       {
-        const error = new Error("Retailer does not exist");
+         const error = new Error("Retailer does not exist");
          error.statusCode = 404;
          throw error;
       }
       const foundProduct=await Product.findByPk(prodId,{attributes:['id','offline_retailer_units']});
-
-      
-      
+      if(!foundProduct)
+      {
+        const error = new Error("Product does not exist");
+        error.statusCode = 404;
+        throw error;
+      }           
       const retailerProduct=await RetailerProduct.findOne({where:{retailerId:foundRetailer.id,productId:foundProduct.id},attributes:['id','retailerId','productId','units_avail']});
-      
+      if(!retailerProduct)
+      {
+        const error = new Error("Product does not belong to the retailer");
+        error.statusCode = 404;
+        throw error;
+      }
+
       if(prodUnits>foundProduct.offline_retailer_units)
       {
         const error = new Error("Insufficient Stock.Select a new stock count");
@@ -381,7 +405,7 @@ exports.fetchProdRegionStats=async(req,res,next)=>{
       else
       regions="No Region Found for the product";
       res.status(200).json({message:"Product Regional Stats Fetched",regionStats:regions});
-  }
+  }targetSales
   catch(err)
   {
     if (!err.statusCode) 
@@ -413,6 +437,12 @@ exports.updateRegionalSaleInfo=async(req,res,next)=>{
          throw error;
       }
     const retailerProd=await RetailerProduct.findOne({where:{retailerId:foundRetailer.id,productId:prodId},attributes:['id','retailerId','productId','units_sold']});
+    if(!retailerProd)
+    {
+        const error = new Error("Retailer doesn't own this product");
+        error.statusCode = 404;
+        throw error;
+    }
     const retailRegion=await RegionRetailer.findOne({where:{retailerProductId:retailerProd.id,regionId:regionId},attributes:['id','regional_price','sold_count','returned_count','expired_count','out_of_stock','in_sale']});
     if(!retailRegion)
     {
@@ -421,6 +451,10 @@ exports.updateRegionalSaleInfo=async(req,res,next)=>{
       throw error;
     }
     const product=await Product.findByPk(prodId,{attributes:['id','units_sold_total']});
+    const prodRegion=await ProductRegion.findOne({where:{productId:prodId,regionId:regionId},attributes:['id','total_units_sold','total_units_returned','total_units_expired']});
+    prodRegion.total_units_sold+=sold_count;
+    prodRegion.total_units_returned+=returned_count;
+    prodRegion.total_units_expired+=expired_count;
     product.units_sold_total+=sold_count;
     retailRegion.regional_price=price;
     retailRegion.sold_count+=sold_count;
@@ -432,6 +466,7 @@ exports.updateRegionalSaleInfo=async(req,res,next)=>{
     await product.save();
     await retailerProd.save();
     await retailRegion.save();
+    await prodRegion.save();
     res.status(200).json({message:"Regional Sales Updated"});
   }
   catch(err)
