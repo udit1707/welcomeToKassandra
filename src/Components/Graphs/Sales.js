@@ -14,7 +14,7 @@ const state = {
            'April', 'May',],
   datasets: [
     {
-      label: 'Rainfall',
+      label: 'Sales',
       backgroundColor: 'rgba(24,28,143,0.2)',
       borderColor: '#3E42B5',
       fill:true,
@@ -45,9 +45,11 @@ const Sales = props => {
             <Line  width='100%' height='40%'
             style={{backgroundColor:'white'}}draggable={true}
           data={state}
+          
           options={{
               responsive:true,
               maintainAspectRatio:false,
+
             title:{
               display:true,
               text:'Average Rainfall per month',

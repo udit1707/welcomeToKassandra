@@ -6,8 +6,9 @@ import Ear from '../Assets/earpod.jpeg'
 import Loader from 'react-loader-spinner'
 import { useDispatch, useSelector } from 'react-redux'
 import { getTopProducts } from '../store/actions/manufacturer'
+import { retailerGetTopProducts } from '../store/actions/retailer'
 
-const TopSellingProducts = props => {
+const TopSellingRetailerProducts = props => {
     const Wwidth=window.innerWidth;
     const Wheight=window.innerHeight;
     const [contain,setContain]=useState(false)
@@ -21,7 +22,7 @@ const TopSellingProducts = props => {
     const fn2 = useCallback(async ()=>{
         setContain(false)
         try{
-            const result = await dispatch(getTopProducts(token));
+            const result = await dispatch(retailerGetTopProducts(token));
             console.log(result);                    
             setContain(true);
         }catch(err){
@@ -34,8 +35,7 @@ const TopSellingProducts = props => {
     useEffect(()=>{
         fn2();
     },[fn2])
-     const data_li=data===null||data.length ===0?null:
-     data.map(item=>{return {src:item.image,volume:item.units_sold_total,profits:item.units_avail}})
+    
      //[
     //     {src:Tshirt2,volume:'3600',profits:'40K'},
     //     {src:Ear,volume:'1200',profits:'5K'},
@@ -117,7 +117,7 @@ const TopSellingProducts = props => {
                 alignItems:'center',
                 display:'flex'
             }}>
-                <text style={{color:'#B1B0B0',fontSize:14,fontFamily:'Segoe UI'}}>Unts Left</text>
+                <text style={{color:'#B1B0B0',fontSize:14,fontFamily:'Segoe UI'}}>Offline Retailer Unts</text>
             </div>
 
         </div>
@@ -131,7 +131,7 @@ const TopSellingProducts = props => {
             borderEndStartRadius:Wwidth/(1920/10),
             borderEndEndRadius:Wwidth/(1920/10),
         }}>
-            {data_li !==null && data_li.length !==0? data_li.map((item,index)=><div style={{
+            {data !==null && data.length !==0? data.map((item,index)=><div style={{
                 width:"100%",
                 height:Wheight*0.9/(1080/83),
                 flexDirection:'row',
@@ -153,7 +153,7 @@ const TopSellingProducts = props => {
                     justifyContent:'center',
                     alignItems:'center'
                 }}>
-                    <img src={item.src} style={{width:'100%',height:'100%'}} />
+                    <img src={item.prodData.image} style={{width:'100%',height:'100%'}} />
                 </div>
                 </div>
                 <div style={{
@@ -163,7 +163,8 @@ const TopSellingProducts = props => {
                 alignItems:'center',
                 display:'flex'
                 }}>
-                    <text style={{color:index%2 === 0 ? 'white':'#030303',fontSize:14,fontFamily:'Segoe UI'}}>{item.volume}</text>
+                    <text style={{color:index%2 === 0 ? 'white':'#030303',fontSize:14,fontFamily:'Segoe UI'}}>
+                        {item.prodData.units_sold_total}</text>
                 </div>
 
                 <div style={{
@@ -173,7 +174,8 @@ const TopSellingProducts = props => {
                 alignItems:'center',
                 display:'flex'
                 }}>
-                    <text style={{color:index%2 === 0 ? 'white':'#030303',fontSize:14,fontFamily:'Segoe UI'}}>{item.profits}</text>
+                    <text style={{color:index%2 === 0 ? 'white':'#030303',fontSize:14,fontFamily:'Segoe UI'}}>
+                        {item.prodData.offline_retailer_units}</text>
                 </div>
                 </div>
             ):<text style={{fontFamily:'Segoe UI ',fontSize:16,color:'#030303'}}>No Data, add items in stock</text>}
@@ -183,4 +185,4 @@ const TopSellingProducts = props => {
     return component 
 }
 
-export default TopSellingProducts;
+export default TopSellingRetailerProducts;

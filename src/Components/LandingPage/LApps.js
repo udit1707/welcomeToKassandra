@@ -5,10 +5,29 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/Image";
 import "./Landing.css";
+import { useEffect, useRef } from "react";
 
-export default function LApps() {
+export default function LApps(props) {
+  const run= ()=> {
+    var ele=document.getElementById("APP");
+    const { top, bottom } = ele.getBoundingClientRect();
+    const vHeight = (window.innerHeight || document.documentElement.clientHeight);
+  
+    console.log((top > 0 || bottom > 0) && top < vHeight);
+      
+      return (top > 0 || bottom > 0) && top < vHeight-500 ? props.setElement('APP'):null
+    
+  }
+  useEffect(() => {
+        
+    window.addEventListener('scroll', run);
+ 
+    return () => window.removeEventListener('scroll', run);
+    
+  }, []);
+  
   return (
-    <div className="la-container">
+    <div id="APP" className="la-container">
       <Container fluid>
         <Row className="la-row">
           <Col sm={4}>Hello</Col>
@@ -30,6 +49,10 @@ export default function LApps() {
                   <i class="fa fa-android la-fa"></i>
                   For Android
                 </Button>
+              </div>
+              <div style={{marginTop:10,flexDirection:'row',display:'flex',justifyContent:'flex-end',width:'100%'}}>
+                <div style={{width:'20%'}}><text style={{color:'#F5F5F5'}}>Soon</text></div>
+                <div style={{width:'15%'}}><text style={{color:'#F5F5F5'}}>Available</text></div>
               </div>
             </Jumbotron>
           </Col>

@@ -9,13 +9,11 @@ const Login_Signup = () => {
     const Wwidth=window.innerWidth*0.95;
     const Wheight=window.innerHeight;
     const history=useHistory();
-    const {state}=useLocation();
     const [selected,setSelected]=useState(null);
     const [nextPressed,setNextPressed]=useState(false);
     const [data,setData]=useState(null)
-    console.log(state)
     const [hover,setHover]=useState(null);
-    const [pressed,setPressed]=useState(state.pressed)
+    const [pressed,setPressed]=useState('Login')
     return <div style={{width:window.innerWidth,height:Wheight,paddingBottom:10,backgroundColor:'#FAFAFA',cursor:'auto',overflowY:'auto',
                 flexDirection:'row',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                     <div style={{width:'50%',height:'60%'}}>

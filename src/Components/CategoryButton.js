@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
 import Sli from '../Assets/sli_whi.png'
 const CategoryButton = props => {
     const [Category,setCategory]=useState(props.category);
     const [btnShow,setbtnShow]=useState(false);
-    const data=props.data;
+    const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
+    const categories = useSelector(state=>state[role].categories);
     const Wwidth = window.innerWidth;
     const Wheight = window.innerHeight;
     const [categoryHover,setcategoryHover]=useState(null)
@@ -55,15 +57,15 @@ const CategoryButton = props => {
         transitionDuration:'0s',
         justifyContent:'flex-start',
         display:'flex'}}>
-            {data.map(item=>
+            {categories.map(item=>
             <div 
             onBlur={()=>setbtnShow(false)}
-            onMouseEnter={()=>setcategoryHover(item)}
+            onMouseEnter={()=>setcategoryHover(item.id)}
             onMouseLeave={()=>setcategoryHover(null)}
             onMouseUpCapture={()=>{setCategory(item);setbtnShow(false);props.setCategory(item)}}
             style={{
                 width:'100%',
-                backgroundColor:Category === item ?'#E3DFDF':categoryHover === item ?'#F5F3F3':null,
+                backgroundColor:Category!==null && Category.id === item.id ?'#E3DFDF':categoryHover === item.id ?'#F5F3F3':null,
                 justifyContent:'center',
                 alignItems:'center',
                 padding:5}}>

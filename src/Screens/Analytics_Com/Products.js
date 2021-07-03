@@ -9,12 +9,14 @@ import ProductsSold from '../../Components/ProductsSold/ProductsSold';
 import Stocks from '../../Components/StockItems/Stocks';
 import TotalSales from "../../Components/TotalSales/TotalSales"
 import AllotStocks from '../../Components/AllotStocks/AllotStocks';
+import RegionalStock from '../../Components/Retailer/RegionalStock';
 
 const Products = props =>{
     const Wwidth=window.outerWidth;
     const Wheight=window.innerHeight;
     const location=useLocation();
     const history=useHistory();
+    const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
     console.log(window.innerWidth  + "  "+ window.innerHeight)
     return <div style={{width:Wwidth,height:'100%',paddingBottom:15,backgroundColor:'#FAFAFA',cursor:'auto'}}>
         <Header />
@@ -85,7 +87,7 @@ const Products = props =>{
             alignItems:'center'
         }}>
             <AllotStocks />
-            </div>:<div style={{
+            </div>:role==='manufacturer'?<div style={{
             width:'100%',
             height:'100%',
             flexDirection:'row',
@@ -109,7 +111,7 @@ const Products = props =>{
                 </div>
                 <text style={{fontFamily:'Segoe UI Semibold',fontSize:15,color:'white',marginLeft:12}}>Add Product </text>
             </div>
-    </div>}
+    </div>:<RegionalStock />}
     </div>}
 
 export default Products

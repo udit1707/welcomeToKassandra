@@ -6,9 +6,27 @@ import CardDeck from "react-bootstrap/CardDeck";
 import Card from "react-bootstrap/Card";
 
 import "./Landing.css";
-export default function LContact() {
+import { useEffect } from "react";
+export default function LContact(props) {
+  const handler= ()=> {
+    var ele=document.getElementById("About");
+    const { top, bottom } = ele.getBoundingClientRect();
+    const vHeight = (window.innerHeight || document.documentElement.clientHeight);
+  
+    
+      
+      return (top > 0 || bottom > 0) && top < vHeight-400 ? props.setElement('About'):null
+    
+  }
+  useEffect(() => {
+        
+    window.addEventListener('scroll', handler);
+ 
+    return () => window.removeEventListener('scroll', handler);
+    
+  }, []);
   return (
-    <div className="lc-container">
+    <div id="About" className="lc-container">
       <Container fluid>
         <Jumbotron className="lc-jumbo">
           <h3 className="lc-h3">OUR TEAM</h3>
@@ -22,51 +40,31 @@ export default function LContact() {
                       Arsh Pratap
                     </Card.Title>
                     <Card.Text className="lc-card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua.
+                      Web and App developer, Keen Interest in Machine Learning and AI. Curious in Robotics and Mixed Reality
                     </Card.Text>
+                   
                     <Card.Link>
-                      <i className="fa fa-phone"></i>
+                    <a href="https://github.com/arshPratap" target="_blank"><i className="fa fa-github"></i></a>
                     </Card.Link>
                     <Card.Link>
-                      <i className="fa fa-envelope"></i>
-                    </Card.Link>
-                    <Card.Link>
-                      <i className="fa fa-whatsapp"></i>
-                    </Card.Link>
-                    <Card.Link>
-                      <i className="fa fa-github"></i>
-                    </Card.Link>
-                    <Card.Link>
-                      <i className="fa fa-linkedin"></i>
+                    <a href="" target="_blank"><i className="fa fa-linkedin"></i></a>
                     </Card.Link>
                   </Card.Body>
                 </Card>
-                <Card className="lc-card text-center">
+                <Card style={{flexDirection:'colum',justifyContent:'space-between',display:'flex'}} className="lc-card text-center">
                   <Card.Body>
                     <Card.Title className="lc-card-title">
                       Saksham Tiwari
                     </Card.Title>
                     <Card.Text className="lc-card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua.
+                      Web and App developer. Keen Interest in UI / UX design, layouts formation.  Interpret ideas into designs .
                     </Card.Text>
+                   
                     <Card.Link>
-                      <i className="fa fa-phone"></i>
+                      <a href="https://github.com/thebigshotsam" target="_blank"><i className="fa fa-github"></i></a>
                     </Card.Link>
                     <Card.Link>
-                      <i className="fa fa-envelope"></i>
-                    </Card.Link>
-                    <Card.Link>
-                      <i className="fa fa-whatsapp"></i>
-                    </Card.Link>
-                    <Card.Link>
-                      <i className="fa fa-github"></i>
-                    </Card.Link>
-                    <Card.Link>
-                      <i className="fa fa-linkedin"></i>
+                      <a href="https://www.linkedin.com/in/saksham-tiwari-6210a1180/" target="_blank"><i className="fa fa-linkedin"></i></a>
                     </Card.Link>
                   </Card.Body>
                 </Card>
@@ -76,24 +74,14 @@ export default function LContact() {
                       Udit Singh
                     </Card.Title>
                     <Card.Text className="lc-card-text">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua.
+                      Backend developer and ML enthusiast. Keen Interest in backend technologies and Cloud Architectures
                     </Card.Text>
+                   
                     <Card.Link>
-                      <i className="fa fa-phone"></i>
+                      <a href="https://github.com/udit1707" target="_blank"><i className="fa fa-github"></i></a>
                     </Card.Link>
                     <Card.Link>
-                      <i className="fa fa-envelope"></i>
-                    </Card.Link>
-                    <Card.Link>
-                      <i className="fa fa-whatsapp"></i>
-                    </Card.Link>
-                    <Card.Link>
-                      <i className="fa fa-github"></i>
-                    </Card.Link>
-                    <Card.Link>
-                      <i className="fa fa-linkedin"></i>
+                      <a href="https://www.linkedin.com/in/udit-singh/" target="_blank"><i className="fa fa-linkedin"></i></a>
                     </Card.Link>
                   </Card.Body>
                 </Card>

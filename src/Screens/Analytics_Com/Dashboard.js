@@ -20,21 +20,24 @@ import Doughnut_Sales from '../../Components/Graphs/Doughnut_Sales'
 import GeoMap from '../../Components/GeoMap'
 import TopSellingRegions from '../../Components/TopSellingRegions'
 import { useDispatch, useSelector } from 'react-redux'
+import TopSellingRetailerProducts from '../../Components/TopSellingRetailerProducts'
 import { getProducts } from '../../store/actions/manufacturer'
 import Loader from 'react-loader-spinner'
+import { retailerGetProducts } from '../../store/actions/retailer'
 const Dashboard = props =>{
     const Wwidth=window.innerWidth;
     const Wheight=window.innerHeight;
     const [selected,setSelected]=useState('Digital');
     const dispatch=useDispatch();
-    const products=useSelector(state=>state[role].products);
     const token=JSON.parse(localStorage.getItem('stateRetail')).token;
     const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
+    const products=useSelector(state=>state[role].products);
     const [contain,setContain]=useState(false);
     const f2= useCallback(async ()=>{
         setContain(false)
         try{
-            const result = await dispatch(getProducts(token));
+            const result = role==='manufacturer'? await dispatch(getProducts(token)):
+            role==='retailer'?dispatch(retailerGetProducts(token)):null;
             console.log(result);                    
             setContain(true);
         }catch(err){
@@ -101,7 +104,7 @@ const Dashboard = props =>{
             display:'flex'
         }}>
             <Sales />
-            <TopSellingProducts />
+            {role === 'manufacturer'?<TopSellingProducts />:<TopSellingRetailerProducts />}
             
         </div>
         <div style={{

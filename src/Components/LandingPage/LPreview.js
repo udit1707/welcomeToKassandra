@@ -4,16 +4,34 @@ import Carousel from "react-bootstrap/Carousel";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import "./Landing.css";
+import { useEffect } from "react";
 
-export default function LPreview() {
+export default function LPreview(props) {
+  const handler= ()=> {
+    var ele=document.getElementById("PREV");
+    const { top, bottom } = ele.getBoundingClientRect();
+    const vHeight = (window.innerHeight || document.documentElement.clientHeight);
+  
+    
+      
+      return (top > 0 || bottom > 0) && top < vHeight-400 ? props.setElement('PREV'):null
+    
+  }
+  useEffect(() => {
+        
+    window.addEventListener('scroll', handler);
+ 
+    return () => window.removeEventListener('scroll', handler);
+    
+  }, []);
   return (
-    <div className="lp-container">
+    <div id="PREV" className="lp-container">
       <Container fluid>
         <Jumbotron className="lp-jumbo">
           <h3 className="lp-h3">PREVIEW</h3>
-          <p className="lp-p">
+          <p style={{marginTop:10,fontFamily:'Segoe UI'}}  className="lp-p">
             It's time to target the right customers for your business with the
-            help of Leno's patented user tracking and segmentation technology
+            <text style={{fontFamily:'Cinzel', fontWeight:'bold',wordSpacing:'5px',color:'black',fontSize:19.6}}> Kassandra's </text> powerful and efficient Retail Management Gateway
           </p>
         </Jumbotron>
         <Row>

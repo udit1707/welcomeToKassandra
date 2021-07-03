@@ -129,8 +129,8 @@
   border-bottom: none;
 }
 .nav-tabs .nav-link:hover {
-  color: #00c9db;
-  border-bottom: 0.1875rem solid #00c9db;
+  color: #0fd7e6;
+  /* border-bottom: 0.1875rem solid #afb1b1; */
 }
 .nav-tabs .nav-link {
   color: #f1f1f2;
@@ -152,12 +152,7 @@
 
 .lp-container {
   background: rgb(241, 241, 242);
-  background: linear-gradient(
-    90deg,
-    rgba(241, 241, 242, 1) 0%,
-    rgba(196, 223, 230, 1) 50%,
-    rgba(241, 241, 242, 1) 100%
-  );
+  
 }
 .lp-jumbo {
   background-color: transparent;

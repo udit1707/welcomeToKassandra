@@ -18,7 +18,7 @@ export const authenticate=(userId,token,role) => {
 }
 export const signup = (data,role) => {
     return async dispatch => {
-        try{const response=await fetch(`http://welcometokassandra.azurewebsites.net/${role}/signup`,{
+        try{const response=await fetch(`http://welcome-to-kassandra.azurewebsites.net/${role}/signup`,{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'
@@ -45,7 +45,7 @@ export const signup = (data,role) => {
 export const login = (data) => {
     console.log(data)
     return async dispatch => {
-        try{const response=await fetch(`http://welcometokassandra.azurewebsites.net/login`,{
+        try{const response=await fetch(`http://welcome-to-kassandra.azurewebsites.net/login`,{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'
@@ -68,11 +68,11 @@ export const login = (data) => {
 }
 export const logout = (token) => {
     return async dispatch => {
-        try{const response=await fetch('http://welcometokassandra.azurewebsites.net/logout',{
-            method:'GET',
+        try{const response=await fetch('http://welcome-to-kassandra.azurewebsites.net/logout',{
+            method:'POST',
             headers:{
                 'Content-Type':'application/json',
-                'Authorization':'Bearer'+token
+                'Authorization':'Bearer '+token
             },
             
         });
@@ -81,7 +81,7 @@ export const logout = (token) => {
             throw new Error('Error in Authentication');
         }
         const resData=await response.json();
-        
+        localStorage.removeItem('stateRetail')
         console.log(resData);
         dispatch(authenticate(null,null,null));
         }catch(err){

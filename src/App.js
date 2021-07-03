@@ -14,10 +14,12 @@ import {createStore,combineReducers,applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import authReducer from "./store/reducers/auth"
 import manufacturerReducer from "./store/reducers/manufacturer"
+import retailerReducer from "./store/reducers/retailer"
 import ReduxThunk from "redux-thunk"
 const rootReducer=combineReducers({
   auth:authReducer,
-  manufacturer:manufacturerReducer
+  manufacturer:manufacturerReducer,
+  retailer:retailerReducer
 });
 const store=createStore(rootReducer,applyMiddleware(ReduxThunk));
 
