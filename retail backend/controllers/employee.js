@@ -11,6 +11,8 @@ const RetailerProduct = require('../models/retailerProduct');
 const Product = require('../models/product');
 const { default: axios } = require('axios');
 const deepai = require('deepai');
+const moment=require('moment');
+const Meeting = require('../models/meeting');
 deepai.setApiKey(process.env.API_KEY_DEEPAI);
 
 
@@ -78,7 +80,7 @@ exports.fetchOwnDetails=async(req,res,next)=>{
     const foundEmployee=await foundUser.getEmployee({attributes:['id','first_name','last_name','email','mobile','transactions_total','employerId']});
     if(!foundEmployee)
     {
-      const error = new Error("Retailer does not exist");
+      const error = new Error("Employee does not exist");
        error.statusCode = 404;
        throw error;
     }
@@ -114,7 +116,7 @@ exports.postEmployeeThumbsUp=async(req,res,next)=>{
     const foundEmployee=await foundUser.getEmployee({attributes:['id','employerId']});
     if(!foundEmployee)
     {
-      const error = new Error("Retailer does not exist");
+      const error = new Error("Employee does not exist");
        error.statusCode = 404;
        throw error;
     }
@@ -158,7 +160,7 @@ exports.postEmployeeThumbsDown=async(req,res,next)=>{
     const foundEmployee=await foundUser.getEmployee({attributes:['id','employerId']});
     if(!foundEmployee)
     {
-      const error = new Error("Retailer does not exist");
+      const error = new Error("Employee does not exist");
        error.statusCode = 404;
        throw error;
     }
@@ -202,7 +204,7 @@ exports.fetchProductList=async(req,res,next)=>{
     const foundEmployee=await foundUser.getEmployee({attributes:['id','employerId']});
     if(!foundEmployee)
     {
-      const error = new Error("Retailer does not exist");
+      const error = new Error("Employee does not exist");
        error.statusCode = 404;
        throw error;
     }
@@ -239,7 +241,7 @@ exports.postTransaction=async(req,res,next)=>{
     const foundEmployee=await foundUser.getEmployee({attributes:['id']});
     if(!foundEmployee)
     {
-      const error = new Error("Retailer does not exist");
+      const error = new Error("Employee does not exist");
        error.statusCode = 404;
        throw error;
     }
@@ -292,7 +294,7 @@ exports.fetchMyTransactions=async(req,res,next)=>{
     const foundEmployee=await foundUser.getEmployee({attributes:['id']});
     if(!foundEmployee)
     {
-      const error = new Error("Retailer does not exist");
+      const error = new Error("Employee does not exist");
        error.statusCode = 404;
        throw error;
     }
@@ -324,6 +326,85 @@ exports.fetchFeedBackSentiment=async(req,res,next)=>{
       text: feedback});
     console.log(sentiment);
     res.status(200).json({message:"Sentiment Fetched",sentiment:sentiment.output});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+    {
+      err.statusCode = 500;
+    }
+    next(err);     
+  }
+}
+
+
+/****************************************************POST MEETING********************************************** */
+exports.postMeeting=async(req,res,next)=>{
+  const employerId=req.body.id;
+  const subject=req.body.subject;
+  const dated=req.body.date||null;
+  try
+  {
+    const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
+    const foundEmployee=await foundUser.getEmployee({attributes:['id']});
+    if(!foundEmployee)
+    {
+      const error = new Error("Employee does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const employer=await Employer.findByPk(employerId,{attributes:['id']});
+    if(!employer)
+    {
+      const error = new Error("Employer does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    let date=new Date();
+    date=moment(date.toISOString()).format('YYYY-MM-DD');
+    if(dated)
+    {
+        date=dated; 
+    }
+    const newMeeting=await foundEmployee.createMeeting({subject:subject,dated:dated});
+    await employer.addMeeting(newMeeting);
+    res.status(200).json({message:"Meeting Posted"});
+  }
+  catch(err)
+  {
+    if (!err.statusCode) 
+    {
+      err.statusCode = 500;
+    }
+    next(err);     
+  }
+}
+
+
+
+
+/****************************************************Fecth my meetings********************************* */
+
+exports.getMeetings=async(req,res,next)=>{
+  const date=req.query.date;
+  try{
+    const foundUser=await User.findByPk(req.userId,{attributes:['id']});    
+    const foundEmployee=await foundUser.getEmployee({attributes:['id']});
+    if(!foundEmployee)
+    {
+      const error = new Error("Employee does not exist");
+       error.statusCode = 404;
+       throw error;
+    }
+    const foundMeeting=await foundEmployee.getMeetings({where:{dated:date},attributes:['id','subject','dated','employerId','employeeId']});
+    let arr=[];
+    for(let i=0;i<foundMeeting.length;i++)
+    {
+      const employer=await Employer.findByPk(foundMeeting[i].employerId,{attributes:['id','org_name','type']});
+      let obj={meeting:foundMeeting[i],employer:employer};
+      arr.push(obj);
+    }
+    res.status(200).json({message:"Meetings Fetched",meetings:arr});
   }
   catch(err)
   {

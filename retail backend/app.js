@@ -1,4 +1,3 @@
-const path=require('path');
 const express=require('express');
 const app=express();
 const bodyParser=require('body-parser');
@@ -16,9 +15,9 @@ const Product=require('./models/product');
 const ProductTransaction=require('./models/productTransaction');
 const Category=require('./models/category');
 const Region=require('./models/region');
+const ProductRegion=require('./models/productRegion');
 const Retailer=require('./models/retailer');
 const Manufacturer=require('./models/manufacturer');
-// const Employer=require('./models/employer');
 const Employee=require('./models/employee');
 const EmployeeRetailer=require('./models/employeeRetailer');
 const EmployeeManufacturer=require('./models/employeeManufacturer');
@@ -26,10 +25,10 @@ const Ebay=require('./models/ebay');
 const Amazon=require('./models/amazon');
 const Flipkart = require('./models/flipkart');
 const User = require('./models/user');
-// const RetailerRegion=require('./models/retailerRegion');
 const RetailerProduct = require('./models/retailerProduct');
 const RegionRetailer=require('./models/regionRetailer');
 const Employer = require('./models/employer');
+const Meeting=require('./models/meeting');
 
 
 app.use(bodyParser.json());
@@ -60,7 +59,6 @@ app.use(userRoutes);
 
 // Table Assocations
 
-
 User.hasOne(Retailer,{onDelete:"cascade"});
 User.hasOne(Manufacturer,{onDelete:"cascade"});
 User.hasOne(Employee,{onDelete:"cascade"});
@@ -74,23 +72,22 @@ Manufacturer.hasMany(Product);
 Product.hasMany(RetailerProduct);
 Retailer.hasMany(RetailerProduct,{onDelete:"cascade"});
 
+Employee.hasMany(Meeting);
+Employer.hasMany(Meeting);
+
 RetailerProduct.belongsToMany(Region,{through:RegionRetailer});
 Region.belongsToMany(RetailerProduct,{through:RegionRetailer});
 
 Category.hasMany(Product);
 Product.belongsTo(Category);
 
-
-// Product.belongsToMany(Region,{through:RegionProduct});
-// Region.belongsToMany(Product,{through:RegionProduct});
-
-// Retailer.hasMany(RegionProduct,{onDelete:"cascade"});
-
-
-
 Retailer.hasMany(Amazon,{onDelete:"cascade"});
 Retailer.hasMany(Flipkart,{onDelete:"cascade"});
 Retailer.hasMany(Ebay,{onDelete:"cascade"});
+
+Product.belongsToMany(Region,{through:ProductRegion});
+Region.belongsToMany(Product,{through:ProductRegion})
+
 
 Product.hasOne(Amazon,{onDelete:"cascade"});
 Product.hasOne(Flipkart,{onDelete:"cascade"});
