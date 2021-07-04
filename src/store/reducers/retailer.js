@@ -2,7 +2,7 @@
 
 
 
-import { RETAILER_CATEGORIES, RETAILER_PRODUCTS, SELECT_PRODUCT, TOP_RETAILER_PRODUCTS, TOP_RETAILER_PRODUCTS_REGIONAL, UPDATE_RETAILER_PRODUCT_RETAILER_STOCK, UPDATE_RETAILER_UNITS } from "../actions/retailer";
+import { NEW_PRODUCT, RETAILER_CATEGORIES, RETAILER_PRODUCTS, SELECT_PRODUCT, TOP_RETAILER_PRODUCTS, TOP_RETAILER_PRODUCTS_REGIONAL, UPDATE_RETAILER_PRODUCT_RETAILER_STOCK, UPDATE_RETAILER_UNITS } from "../actions/retailer";
 
 const initialState={
     products:[],
@@ -21,10 +21,15 @@ export default (state=initialState,action)=>{
                 ...state,
                 product:action.product
             }
+        case NEW_PRODUCT:{
+            return{
+                ...state,
+                products:action.products
+            }
+        }
         case RETAILER_PRODUCTS:
              return {...state,
                 products:action.products,
-                categories:action.categories,
                 product:action.product}
         case UPDATE_RETAILER_PRODUCT_RETAILER_STOCK:
             return {...state,

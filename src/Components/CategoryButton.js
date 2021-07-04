@@ -5,7 +5,8 @@ const CategoryButton = props => {
     const [Category,setCategory]=useState(props.category);
     const [btnShow,setbtnShow]=useState(false);
     const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
-    const categories = useSelector(state=>state[role].categories);
+    const categories = JSON.parse(localStorage.getItem('stateRetailCat')).categories;
+    console.log('categories :'+categories)
     const Wwidth = window.innerWidth;
     const Wheight = window.innerHeight;
     const [categoryHover,setcategoryHover]=useState(null)

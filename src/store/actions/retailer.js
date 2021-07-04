@@ -11,39 +11,12 @@ export const  PRODUCTS_RETAILER_ANSWER= 'PRODUCTS_RETAILER_ANSWER';
 export const RETAILER_PRODUCTS='RETAILER_PRODUCTS';
 export const RETAILER_CATEGORIES='RETAILER_CATEGORIES';
 export const SELECT_PRODUCT='SELECT_PRODUCT';
+export const NEW_PRODUCT='NEW_PRODUCT'
 
-
-export const retailerGetCategories = () => {
-    return async dispatch => {
-        try{const response=await fetch('http://welcome-to-kassandra.azurewebsites.net/allCategories',{
-            method:'GET',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            
-        });
-        if(!response.ok){
-            let errorId= ((await response.json()).error);
-            throw new Error('Error in Fetching Data');
-        }
-        const resData=await response.json();
-        
-        console.log(resData)
-        dispatch({
-            type:RETAILER_CATEGORIES,
-            categories:resData.categories
-        })
-        
-    }catch(err){
-            console.log(err)
-            throw err
-        }
-    }
-}
 export const selectProduct = prod =>{
-    return {
-        type:SELECT_PRODUCT,
-        product:prod
+    return async dispatch=>{
+        dispatch({type:SELECT_PRODUCT,
+        product:prod});
     }
 }
 export const retailerNewProduct = (data,token) => {
@@ -74,7 +47,7 @@ export const retailerNewProduct = (data,token) => {
         const resData=await response2.json();
         console.log(resData)
         dispatch({
-            type:RETAILER_PRODUCTS,
+            type:NEW_PRODUCT,
             products:resData.products
         })
         
@@ -95,13 +68,15 @@ export const getRetailerCategories = () => {
             throw new Error('Error in Fetching Data');
         }
         const resData=await response.json();
-        console.log(resData.categories)
+        console.log('categories fetched :'+resData.obj)
         console.log(resData)
         dispatch({
             type:RETAILER_CATEGORIES,
-            categories:resData.categories
+            categories:resData.obj
         })
-        
+        localStorage.setItem('stateRetailCat',JSON.stringify({
+            categories:resData.obj
+        }))
     }catch(err){
             console.log(err)
             throw err
@@ -110,7 +85,7 @@ export const getRetailerCategories = () => {
 }
 export const retailerGetProducts = (token) => {
     return async dispatch => {
-        try{const response=await fetch('http://welcome-to-kassandra.azurewebsites.net/retailer/myProducts',{
+        const response=await fetch('http://welcome-to-kassandra.azurewebsites.net/retailer/myProducts',{
             method:'GET',
             headers:{
                 'Authorization':'Bearer '+token 
@@ -122,27 +97,13 @@ export const retailerGetProducts = (token) => {
         }
         const resData=await response.json();
         console.log(resData);
-        const response2=await fetch('http://welcome-to-kassandra.azurewebsites.net/allCategories',{
-            method:'GET',
-             
-        });
-        if(!response2.ok){
-            let errorId= ((await response2.json()).error);
-            throw new Error('Error in Fetching Data');
-        }
-        const resData2=await response2.json();
-        console.log(resData2.categories)
+        
         dispatch({
             type:RETAILER_PRODUCTS,
             products:resData.arr,
-            categories:resData2.categories,
             product:resData.arr[0]
         })
-        
-    }catch(err){
-            console.log(err)
-            throw err
-        }
+    
     }
 }
 export const retailerGetTopRegionalProducts = (token) => {

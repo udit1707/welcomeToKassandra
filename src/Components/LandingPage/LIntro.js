@@ -57,7 +57,7 @@ export default function LIntro(props) {
           </Col>
           <Col sm={4}>
             <Image src={kLogo} rounded className="li-img" />
-            <h1 className="li-logo-text">KASSANDRA</h1>
+            <h1 style={{fontFamily:'Cinzel'}} className="li-logo-text">KASSANDRA</h1>
           </Col>
         </Row>
       </Container>

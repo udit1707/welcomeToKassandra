@@ -20,7 +20,7 @@ const RegionalStock =props => {
     const token=JSON.parse(localStorage.getItem('stateRetail')).token;
     const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
     const products = useSelector(state=>state[role].products);
-    const categories = useSelector(state=>state[role].categories);
+    const categories = JSON.parse(localStorage.getItem('stateRetailCat')).categories;
     const selected=useSelector(state=>state[role].product);
     
     const dispatch=useDispatch();
@@ -34,19 +34,33 @@ const RegionalStock =props => {
     //     {productInfo:{src:phone,title:'7'}}];
     const Wwidth = window.innerWidth;
     const Wheight = window.innerHeight;
-    const f2=useCallback(async ()=>{
+    const press=useCallback(async(prod)=>{
         setContain(false)
         try{
-            const result = await dispatch(retailerGetProducts(token));
-            console.log(result);  
+            const result = await dispatch(selectProduct(prod));
+            console.log(result);
+            setContain(true)  
         }catch(err){
             setContain(true)
             console.log(err);
             window.alert(err.message)
         }
-        setContain(true)
+        
         return ;
-    },[dispatch,setContain,props])
+    },[dispatch,setContain,props,selectProduct])
+    const f2=useCallback(async ()=>{
+        setContain(false)
+        try{
+            const result = await dispatch(retailerGetProducts(token));
+            console.log(result);
+            setContain(true)  
+        }catch(err){
+            setContain(true)
+            console.log(err);
+            window.alert(err.message)
+        }
+        
+    },[dispatch,setContain,props,retailerGetProducts])
 
     useEffect(()=>{
         f2();
@@ -59,7 +73,7 @@ const RegionalStock =props => {
                     onMouseEnter={()=>setHover(item.productInfo.id)}
                     onMouseLeave={()=>setHover(null)}
                     key={item.id}
-                    onMouseUpCapture={()=>dispatch(selectProduct(item))}
+                    onMouseUpCapture={()=>press(item)}
                     style={{
                         width:Wwidth*0.03,
                         height:Wwidth*0.03,
@@ -76,7 +90,7 @@ const RegionalStock =props => {
                     onMouseEnter={()=>setHover(item.productInfo.id)}
                     onMouseLeave={()=>setHover(null)}
                     key={item.id}
-                    onMouseUpCapture={()=>dispatch(selectProduct(item))}
+                    onMouseUpCapture={()=>press(item)}
                     style={{
                         width:Wwidth*0.03,
                         height:Wwidth*0.03,

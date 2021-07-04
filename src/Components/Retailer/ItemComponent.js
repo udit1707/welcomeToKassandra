@@ -9,7 +9,7 @@ const ItemComponent= props => {
     const data_tags=['Region','Stock','Regional Price','Sold','Return','Expired','Status']
     const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
     const selected=useSelector(state=>state[role].product);
-        
+    
     return <div style={{
         width:Wwidth*0.95/(1920/900),
         height:Wheight*0.8,

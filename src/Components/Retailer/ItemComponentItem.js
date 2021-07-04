@@ -27,9 +27,7 @@ const ItemComponentItem = props => {
         }
     },[dispatch]);
 
-    useEffect(()=>{
-        press();
-    },[press])
+    
 
     return <div style={{width:'100%',marginBottom:'2%',alignItems:'center',display:'flex',flexDirection:'column'}}>
         <div style={{flexDirection:'row',justifyContent:'space-evenly',width:'100%',alignItems:'center',display:'flex',width:'100%'}}>

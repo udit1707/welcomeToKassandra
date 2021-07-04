@@ -61,7 +61,7 @@ const Signup2 = (props) => {
         }
       setNextPressed(false)
       return ;
-    },[dispatch,setNextPressed,props.nextPressed,props.pressedLogin]);
+    },[dispatch,setNextPressed,props.nextPressed,props.pressedLogin,props,kId,cemail,contact,cname,cPass,cLname]);
 
     const next = () => {      
       if (!validator.isEmail(cemail)){

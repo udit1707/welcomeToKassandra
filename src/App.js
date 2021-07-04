@@ -10,18 +10,25 @@ import Home from './Home/index'
 
 import UploadScreen from './Screens/UploadScreen/UploadScreen';
 import Listed from './Screens/Analytics_Com/Listed';
-import {createStore,combineReducers,applyMiddleware} from 'redux';
+import {createStore,combineReducers,compose,applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import authReducer from "./store/reducers/auth"
 import manufacturerReducer from "./store/reducers/manufacturer"
 import retailerReducer from "./store/reducers/retailer"
-import ReduxThunk from "redux-thunk"
+import { composeWithDevTools } from 'redux-devtools-extension'
+import thunkMiddleware from "redux-thunk"
+
+
+const composeEnhancers = composeWithDevTools(
+  applyMiddleware(thunkMiddleware)
+  // other store enhancers if any
+)
 const rootReducer=combineReducers({
   auth:authReducer,
   manufacturer:manufacturerReducer,
   retailer:retailerReducer
 });
-const store=createStore(rootReducer,applyMiddleware(ReduxThunk));
+const store=createStore(rootReducer,composeEnhancers);
 
 function App() {
   return (

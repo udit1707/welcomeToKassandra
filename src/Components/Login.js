@@ -8,14 +8,15 @@ import Loader from 'react-loader-spinner'
 import { login } from '../store/actions/auth';
 import { useDispatch } from 'react-redux';
 import { getCategories } from '../store/actions/manufacturer';
+import { getRetailerCategories } from '../store/actions/retailer';
 const Login = (props) => {
     const Wwidth=window.innerWidth*0.95;
     const Wheight=window.innerHeight;
     const history=useHistory();
     const [pressed,setPressed]=useState(null);
     const [nextPressed,setNextPressed]=useState(false)
-    const [pidError,setPidError]=useState(null);
-    const [passwordError,setPasswordError]=useState(null);
+    const [pidError,setPidError]=useState('');
+    const [passwordError,setPasswordError]=useState('');
     const [pid,setPid]=useState("");
     const [ps,setPs]=useState("");
     const [state,setState]=useState(null);
@@ -32,12 +33,26 @@ const Login = (props) => {
             try{
                     const result = await dispatch(getCategories());
                     console.log(result);                    
-                    props.nextPressed(false);
-                    history.push('/Home')
+                    try{
+                        const result = await dispatch(getRetailerCategories());
+                        console.log(result); 
+                        history.push('/Home')                   
+                        props.nextPressed(false);
+                        
+                        setNextPressed(false);
+                    }catch(err){
+                        props.nextPressed(false);
+                        setNextPressed(false);
+                        setPid('');
+                        console.log(err);
+                        window.alert(err.message)
+                    }                
+                    
                     setNextPressed(false);
                 }catch(err){
                     props.nextPressed(false);
                     setNextPressed(false);
+                    setPid('');
                     console.log(err);
                     window.alert(err.message)
                 }                    
@@ -45,12 +60,14 @@ const Login = (props) => {
         }catch(err){
             props.nextPressed(false);
             setNextPressed(false);
+            setPid('');
+            setPs('');
             console.log(err);
             window.alert(err.message)
         }
         setNextPressed(false)
         return ;
-    },[dispatch,setNextPressed,props.nextPressed,history]);
+    },[dispatch,setNextPressed,props.nextPressed,history,pid,ps]);
 
     
     const next=()=>{
@@ -63,7 +80,7 @@ const Login = (props) => {
             setPasswordError('Enter Password')
         }else{
             setPasswordError(null);
-            if (pidError !== null && passwordError !== null){
+            if (pidError !== null && passwordError !== null && ps!=='' && pid!==''){
 
             }else{
                 fn2();
