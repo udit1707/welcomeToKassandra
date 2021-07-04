@@ -12,11 +12,14 @@ import Prof from '../../Assets/prof.png'
 import tab from '../../Assets/tabs.png'
 
 import ToggleButtonComponent from '../ToggleButton/ToggleButton';
+import { useSelector } from 'react-redux';
 const ListedComponent = props => {
     const Wwidth = window.innerWidth;
     const [toggle,setToggle]=useState('true');
     const Wheight = window.innerHeight;
     const data_tags=['Platform','Total Sales','Total Revenue','Total Profit','Recommend'];
+    const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
+    const selected=useSelector(state=>state[role].product);
     const data=[
         {platformName:'Amazon',
         totalSales:1500,
@@ -98,7 +101,7 @@ const ListedComponent = props => {
                          borderRadius:5,
                         boxShadow:"0px 1px 3px #9E9E9E"}}>
                             <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:14}}>
-                                Tshirt Green Light</text>
+                                {selected.productInfo.prod_name}</text>
                     </div>
                     <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:15}}>Category</text>
                      <div style={{
@@ -113,7 +116,7 @@ const ListedComponent = props => {
                          borderRadius:5,
                         boxShadow:"0px 1px 3px #9E9E9E"}}>
                             <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:14}}>
-                                Casual Wear</text>
+                            {selected.category}</text>
                     </div>
                     <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:15}}>Pricing</text>
                      <div style={{
@@ -214,7 +217,7 @@ const ListedComponent = props => {
                 backgroundColor='#FDF4E9'
                 borderColor='#EDAF60'
                 previewTitle='Total Orders'
-                previewTitleData='1000'
+                previewTitleData={selected.stats.units_sold}
                 previewAnalytics='1.2%'               
                 />
                 <ProductPreview

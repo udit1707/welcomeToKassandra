@@ -41,11 +41,18 @@ export default function LPreview(props) {
                 interval={1200000}
                 className="lp-caraousel-container"
               >
-                <iframe
+                <iframe 
+                className="lp-responsive-iframe"
+                width="956" height="538" src="https://www.youtube.com/embed/MNZW3bhdp18" 
+                title="YouTube video player" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
+                {/* <iframe
                   className="lp-responsive-iframe"
                   src="https://www.youtube.com/embed/cZj05xhaV64?controls=0"
                   title="YouTube video player"
-                ></iframe>
+                ></iframe> */}
                 <Carousel.Caption className="lp-caraousel-caption">
                   <h4>KASSANDRA</h4>
                   <p>Take a glimpse of our application</p>

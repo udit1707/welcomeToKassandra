@@ -13,7 +13,7 @@ import { getCategories } from '../../store/actions/manufacturer'
 
 const RegionalStock =props => {
     
-    const [state,setState]=useState('Digital');
+   
     const [contain,setContain]=useState(false);
     const [hover,setHover]=useState(null);
     const [category,setCategory]=useState(null);
@@ -63,7 +63,7 @@ const RegionalStock =props => {
     },[dispatch,setContain,props,retailerGetProducts])
 
     useEffect(()=>{
-        f2();
+        f2()
     },[f2])
     console.log('CATEGO '+categories)
     var menuData= (products !== null) && (products.length  !== 0) ? products.map(item=>{
@@ -183,31 +183,29 @@ const component =!contain?
                                 overflow:'hidden',
                                 cursor:'pointer',
                                 display:'flex'}}>
-                                <div onMouseUpCapture={()=>setState("Digital")} 
+                                <div onMouseUpCapture={()=>props.setState("All")} 
                                 style={{
                                     width:'50%',
-                                    backgroundColor:state === 'Digital'?'#376BF0':null,
+                                    backgroundColor:props.state === 'All'?'#376BF0':null,
                                     height:'100%',
                                     alignItems:'center',
                                     justifyContent:'center',
                                     display:'flex'}}>
-                                    <text style={{fontFamily:'Segoe UI',fontSize:15,color:state === 'Digital'?'white':'#376BF0'}}>Digital</text>
+                                    <text style={{fontFamily:'Segoe UI',fontSize:15,color:props.state === 'All'?'white':'#376BF0'}}>All</text>
                                 </div>
-                                <div onMouseUpCapture={()=>setState("Regional")} 
+                                <div onMouseUpCapture={()=>props.setState("Popular")} 
                                 style={{
                                     width:'50%',
-                                    backgroundColor:state === 'Regional'?'#376BF0':null,
+                                    backgroundColor:props.state === 'Popular'?'#376BF0':null,
                                     height:'100%',
                                     alignItems:'center',
                                     justifyContent:'center',
                                     display:'flex'}}>
-                                    <text style={{fontFamily:'Segoe UI',fontSize:15,color:state === 'Regional'?'white':'#376BF0'}}>Popular</text>
+                                    <text style={{fontFamily:'Segoe UI',fontSize:15,color:props.state === 'Popular'?'white':'#376BF0'}}>Popular</text>
                                 </div>                            
                                 </div>
-                            </div>
-                        {state === 'Digital'?
-                        <RegionalStockItem />:null}
-                        
+                            </div>                        
+                        <RegionalStockItem setContain={(val)=>setContain(val)} />                        
                     </div>
     return component;
 }

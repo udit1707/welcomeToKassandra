@@ -10,9 +10,7 @@ export default function LFooter() {
           <Col sm={4} className="lft-col">
             <h6 className="lft-h6">About KASSANDRA</h6>
             <p className="lft-p">
-              Kassandra is an open-source lorem ipsum dias sit amet, consectetur
-              adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.
+            Kassandra is a set of software applications that aims to provide assistive and guiding features to resellers so that they can more efficiently set up and expand their businesses and trades.
             </p>
           </Col>
           <Col sm={4} className="lft-col">

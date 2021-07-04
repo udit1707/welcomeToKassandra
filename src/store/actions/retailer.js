@@ -122,7 +122,8 @@ export const retailerGetTopRegionalProducts = (token) => {
         console.log(resData)
         dispatch({
             type:TOP_RETAILER_PRODUCTS_REGIONAL,
-            products:resData.arr
+            products:resData.arr,
+            product:resData.arr[0]
         })
         
     }catch(err){
@@ -279,7 +280,46 @@ export const retailerUpdateUnits = (prodId,unitsToAdd,token) => {
         console.log(resData)
         dispatch({
             type:UPDATE_RETAILER_UNITS,
-            products:resData.products
+            products:resData.arr
+        })
+        
+    }catch(err){
+            console.log(err)
+            throw err
+        }
+    }
+}
+export const retailerUpdateRegionalUnits = (data,token) => {
+    return async dispatch => {
+        try{const response=await fetch('http://welcome-to-kassandra.azurewebsites.net/retailer/productBusiness',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+token 
+            },
+            body:data,
+            redirect: 'follow'
+            
+        });
+        if(!response.ok){
+            let errorId= ((await response.json()).error);
+            throw new Error('Error in Fetching Data');
+        }
+        const response2=await fetch('http://welcome-to-kassandra.azurewebsites.net/retailer/myProducts',{
+            method:'GET',
+            headers:{
+                'Authorization':'Bearer '+token 
+            },
+        });
+        if(!response2.ok){
+            let errorId= ((await response2.json()).error)
+            throw new Error('Error in Fetching Data');
+        }
+        const resData=await response2.json();
+        console.log(resData)
+        dispatch({
+            type:UPDATE_RETAILER_PRODUCT_RETAILER_STOCK,
+            products:resData.arr
         })
         
     }catch(err){

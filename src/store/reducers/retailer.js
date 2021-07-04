@@ -43,7 +43,8 @@ export default (state=initialState,action)=>{
         case TOP_RETAILER_PRODUCTS_REGIONAL:{
             return {
                 ...state,
-                topProductsRegional:action.products
+                topProductsRegional:action.products,
+                product:action.product
             }
         }
         case TOP_RETAILER_PRODUCTS:{

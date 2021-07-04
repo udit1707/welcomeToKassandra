@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import tab from '../../Assets/tabs.png'
 
@@ -11,6 +12,8 @@ const PopularRegionalStockItem =props => {
     const [toggle,setToggle]=useState('true');
     const Wwidth = window.innerWidth;
     const Wheight = window.innerHeight;
+    const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
+    const selected=useSelector(state=>state[role].product);
     return <div style={{width:'100%',marginTop:'4%',display:'flex',justifyContent:'center',alignItems:'flex-start'}}>
     <div style={{
         width:'30%',
@@ -22,7 +25,7 @@ const PopularRegionalStockItem =props => {
         boxShadow:"2px 2px 5px #9E9E9E",}}>
             <div style={{width:'100%',height:'60%',flexDirection:'row',display:'flex',justifyContent:'space-around'}}>
                 <div style={{width:'52%',height:'100%',justifyContent:'center',alignItems:'center',display:'flex'}}>
-                    <img src={props.selected.productInfo.image} style={{width:'100%',height:'100%'}} />
+                    <img src={selected.productInfo.image} style={{width:'100%',height:'100%'}} />
 
                 </div>
                 <div style={{width:'48%',marginLeft:'5%',height:'100%',flexDirection:'column',
@@ -40,7 +43,7 @@ const PopularRegionalStockItem =props => {
                          borderRadius:5,
                         boxShadow:"0px 1px 3px #9E9E9E"}}>
                             <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:14}}>
-                                {props.selected.productInfo.prodName}</text>
+                                {selected.productInfo.prod_name}</text>
                     </div>
                     <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:15}}>Category</text>
                      <div style={{
@@ -55,7 +58,7 @@ const PopularRegionalStockItem =props => {
                          borderRadius:5,
                         boxShadow:"0px 1px 3px #9E9E9E"}}>
                             <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:14}}>
-                                {props.selected.productInfo.category}</text>
+                                {selected.category}</text>
                     </div>
                     <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:15}}>Pricing</text>
                      <div style={{
@@ -102,7 +105,7 @@ const PopularRegionalStockItem =props => {
             </div>
                        
             <div>
-                <ItemComponent list={props.selected.regionStats} />
+                <ItemComponent setContain={(val)=>props.setContain(val)} />
             </div>
         </div>;
         

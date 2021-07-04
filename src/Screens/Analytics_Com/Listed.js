@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Header from '../../Components/Headers/Header'
 import slider from '../../Assets/sli_whi.png';
 import tshirt from '../../Assets/tshirt.png';
@@ -13,52 +13,109 @@ import CategoryButton from '../../Components/CategoryButton';
 import ScrollMenu from 'react-horizontal-scrolling-menu';
 import { Menu } from '../../Components/Menu';
 import Pricing from '../../Components/Listed/Pricing';
+import { useDispatch, useSelector } from 'react-redux';
+import { retailerGetProducts, selectProduct } from '../../store/actions/retailer';
+import { getProducts } from '../../store/actions/manufacturer';
+import Loader from 'react-loader-spinner';
 const Listed  = props => {
-    const [selected,setSelected]=useState({src:tshirt,title:'1'});
     const [hover,setHover]=useState(null)
     const [state,setState]=useState('Overall');
     
-    const [category,setCategory]=useState('Casual Wear');
+    const [category,setCategory]=useState(null);
     const data=[{src:tshirt,title:'1'},{src:tshirt2,title:'2'},{src:lap,title:'3'},{src:earpod,title:'4'},{src:phone,title:'5'},{src:earpod,title:'6'},{src:phone,title:'7'}];
-    
+    const [contain,setContain]=useState(false);
     const Wwidth = window.innerWidth;
     const Wheight = window.innerHeight;
-    var menuData=data.map(item=>{
-                if (selected.title === item.title || hover === item.title){
-                    return <div 
-            onMouseEnter={()=>setHover(item.title)}
-            onMouseLeave={()=>setHover(null)}
-            key={item.title}
-            onMouseUpCapture={()=>setSelected(item)}
-            style={{
-                width:Wwidth*0.03,
-                height:Wwidth*0.03,
-                borderRadius:Wwidth*0.03,
-                padding:1,
-                marginRight:10,
-                boxShadow:"0px 0.5px 3px #9E9E9E",
-                overflow:'hidden',
-                border:`2px solid #376BF0`}}>
-                    <img src={item.src} style={{width:'100%',height:'100%'}} />
-            </div>}
-            else{
+    const token=JSON.parse(localStorage.getItem('stateRetail')).token;
+    const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
+    const products = useSelector(state=>state[role].products);
+    const categories = JSON.parse(localStorage.getItem('stateRetailCat')).categories;
+    const selected=useSelector(state=>state[role].product);
+    const dispatch=useDispatch()
+    const press=useCallback(async(prod)=>{
+        setContain(false)
+        try{
+            const result = await dispatch(selectProduct(prod));
+            console.log(result);
+            setContain(true)  
+        }catch(err){
+            setContain(true)
+            console.log(err);
+            window.alert(err.message)
+        }
+        
+        return ;
+    },[dispatch,setContain,props,selectProduct])
+    const f2=useCallback(async ()=>{
+        setContain(false)
+        try{
+            const result =role==='retailer'? await dispatch(retailerGetProducts(token)):await dispatch(getProducts(token));
+            console.log(result);
+            setContain(true)  
+        }catch(err){
+            setContain(true)
+            console.log(err);
+            window.alert(err.message)
+        }
+        
+    },[dispatch,setContain,props,retailerGetProducts])
+
+    useEffect(()=>{
+        f2();
+    },[f2])
+    
+    var menuData= (products !== null) && (products.length  !== 0) ? products.map(item=>{
+                        
+        if (selected.productInfo.id === item.productInfo.id || hover === item.productInfo.id){
             return <div 
-            onMouseEnter={()=>setHover(item.title)}
-            onMouseLeave={()=>setHover(null)}
-            key={item.title}
-            onMouseUpCapture={()=>setSelected(item.title)}
-            style={{
-                width:Wwidth*0.03,
-                height:Wwidth*0.03,
-                borderRadius:Wwidth*0.03,
-                padding:1,
-                marginRight:10,
-                boxShadow:"0px 0.5px 3px #9E9E9E",
-                overflow:'hidden',
-                }}>
-                    <img src={item.src} style={{width:'100%',height:'100%'}} />
-            </div>}})
-    return <div style={{width:Wwidth,height:'100%',paddingBottom:15,backgroundColor:'#FAFAFA',cursor:'auto'}}>
+                    onMouseEnter={()=>setHover(item.productInfo.id)}
+                    onMouseLeave={()=>setHover(null)}
+                    key={item.id}
+                    onMouseUpCapture={()=>press(item)}
+                    style={{
+                        width:Wwidth*0.03,
+                        height:Wwidth*0.03,
+                        borderRadius:Wwidth*0.03,
+                        padding:1,
+                        marginRight:10,
+                        boxShadow:"0px 0.5px 3px #9E9E9E",
+                        overflow:'hidden',
+                        border:`2px solid #376BF0`}}>
+                            <img src={item.productInfo.image} style={{width:'100%',height:'100%'}} />
+                    </div>}
+                    else{
+                    return <div 
+                    onMouseEnter={()=>setHover(item.productInfo.id)}
+                    onMouseLeave={()=>setHover(null)}
+                    key={item.id}
+                    onMouseUpCapture={()=>press(item)}
+                    style={{
+                        width:Wwidth*0.03,
+                        height:Wwidth*0.03,
+                        borderRadius:Wwidth*0.03,
+                        padding:1,
+                        marginRight:10,
+                        boxShadow:"0px 0.5px 3px #9E9E9E",
+                        overflow:'hidden',
+                        }}>
+                            <img src={item.productInfo.image} style={{width:'100%',height:'100%'}} />
+                    </div>}}):null;
+
+        const component =!contain?
+        <div style={{
+            width:Wwidth,
+            height:Wheight*0.5,
+            justifyContent:'center',
+            alignItems:'center',display:'flex',flexDirection:'column'}}>
+            <Loader
+            type="Puff"
+            color="#376BF0"        
+            height={80}
+            width={80}
+            //3 secs
+        />
+        <text style={{fontFamily:'Segoe UI Semibold ',fontSize:20,color:'#275473',marginTop:'3%'}}>Fetching In....</text>
+        </div>: <div style={{width:Wwidth,height:'100%',paddingBottom:15,backgroundColor:'#FAFAFA',cursor:'auto'}}>
     <Header />
     <NavHeader />
     <div style={{width:'100%',height:Wheight*0.06,marginTop:'2%',display:'flex',justifyContent:'space-around',alignItems:'center'}}>
@@ -70,7 +127,7 @@ const Listed  = props => {
         category={category}
         setCategory={(val)=>setCategory(val)}
         title='Select Category' 
-        data={['Casual Wear','Electronics','Smartphones','Cosmetics']}/>
+        data={categories}/>
         <div style={{alignItems:'center',justifyContent:'center',display:'flex',position:'relative'}}>
         <ScrollMenu 
             data={menuData}
@@ -148,15 +205,16 @@ const Listed  = props => {
             </div>
             {state === 'Overall'?
             <div style={{width:'100%',flexDirection:'column',justifyContent:'flex-start',display:'flex'}}>
-                <ListedComponent src={selected.src} />
+                <ListedComponent src={selected.productInfo.image} />
                 <div style={{flexDirection:'row',justifyContent:'space-evenly',width:'100%',display:'flex',marginTop:'2%'}}>
                     <Doughnut_Sales title="Audience" labels={['Kids', 'Others', 'Male', 'Female']}/>
                     <Doughnut_Sales title="Age group"  labels={['18 - 25', '10 - 12', '26 - 40', '> 40']} />
                     <Doughnut_Sales title="Platform used"  labels={['Flipkart', 'FBB', 'Ebay', 'Amazon']} />    
                 </div>
-            </div>:<Pricing src={selected.src} />}
+            </div>:<Pricing setContain={(val)=>setContain(val)} src={selected.productInfo.image} />}
             
     </div> ;
+    return component
 }
 
 export default Listed;

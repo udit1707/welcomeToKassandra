@@ -12,6 +12,7 @@ const NavHeader = props => {
     const Wheight=window.innerHeight;
     const dispatch=useDispatch();
     const [pressed,setPressed]=useState(false);
+    const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
     const token=JSON.parse(localStorage.getItem('stateRetail')).token;
     console.log('RTTT '+token)
     const logoutPress=useCallback(async()=>{
@@ -73,7 +74,7 @@ const NavHeader = props => {
         >
             <text style={{fontFamily:'Segoe UI',userSelect:'none',color:'white',fontSize:15}}>Products</text>
         </div>
-        <div onMouseUpCapture={()=>history.push('/listed')} onMouseEnter={()=>setHover('l')} onMouseLeave={()=>setHover(null)} style={{
+        {role==='retailer'?<div onMouseUpCapture={()=>history.push('/listed')} onMouseEnter={()=>setHover('l')} onMouseLeave={()=>setHover(null)} style={{
            width:'6.5%',
            backgroundColor:location.pathname === '/listed' ?'#6468DB': hover === 'l' ?'#5054C7':'',
            height:'100%',
@@ -82,7 +83,7 @@ const NavHeader = props => {
            alignItems:'center'}}
         >
             <text style={{fontFamily:'Segoe UI',userSelect:'none',color:'white',fontSize:15}}>Listed</text>
-        </div>
+        </div>:null}
         <div onMouseEnter={()=>setHover('pr')} onMouseLeave={()=>setHover(null)} style={{
            width:'6.5%',
            backgroundColor:hover === 'pr' ?'#5054C7':'',

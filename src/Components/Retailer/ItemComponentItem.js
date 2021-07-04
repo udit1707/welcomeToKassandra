@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import INDIA_TOPO_JSON from '../AllotStocks/india.topo.json'
 import edit from '../../Assets/edit.png'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { retailerUpdateRegionalUnits } from '../../store/actions/retailer';
 
 const ItemComponentItem = props => {
     const Wwidth = window.innerWidth;
@@ -10,6 +11,9 @@ const ItemComponentItem = props => {
     const [stock,setStock]=useState(props.stock_count);
     const [price,setPrice]=useState(props.regional_price);
     const dispatch=useDispatch();
+    const token=JSON.parse(localStorage.getItem('stateRetail')).token;
+    const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
+    const selected=useSelector(state=>state[role].product);
     const colorData={
         in:'#CFDBFC',
         out:'#F9C5C5'
@@ -19,20 +23,29 @@ const ItemComponentItem = props => {
         out:'#E72121'
     }
     const press= useCallback(async()=>{
+        props.setContain(false)
         try{
-            dispatch();
+            const data=JSON.stringify({
+                "prodId":selected.productInfo.id,
+                "regionId":props.regionId,
+                "price":price,
+                "stocks":parseInt(stock)
+            })
+            console.log(data)
+            const result = await dispatch(retailerUpdateRegionalUnits(data,token));
+            props.setContain(true)
         }catch(err){
-            setContain(true);
+            props.setContain(true);
             window.alert(err.message)
         }
-    },[dispatch]);
+    },[dispatch,stock,price,selected,props]);
 
     
 
     return <div style={{width:'100%',marginBottom:'2%',alignItems:'center',display:'flex',flexDirection:'column'}}>
-        <div style={{flexDirection:'row',justifyContent:'space-evenly',width:'100%',alignItems:'center',display:'flex',width:'100%'}}>
-    <div style={{width:'14%',padding:2,alignItems:'center',justifyContent:'center',display:'flex'}}>
-    <text style={{fontFamily:'Segoe UI Semibold',fontSize:13.5,color:'#3E42B5'}}>
+        <div style={{flexDirection:'row',width:'100%',alignItems:'center',display:'flex',width:'100%'}}>
+    <div style={{width:'13%',padding:2,alignItems:'center',justifyContent:'center',display:'flex'}}>
+    <text style={{fontFamily:'Segoe UI Semibold',fontSize:12,color:'#3E42B5'}}>
         {INDIA_TOPO_JSON.objects.india.geometries.find(region=>region.id === props.map_id).properties.name}
     </text>
     </div>
@@ -93,7 +106,7 @@ const ItemComponentItem = props => {
         </div>  
     </div>    
     </div>
-    <div style={{flexDirection:'row',display:'flex',userSelect:'none',justifyContent:'flex-end',width:'100%'}}>
+    <div style={{flexDirection:'row',marginTop:10,display:'flex',userSelect:'none',justifyContent:'flex-end',width:'100%'}}>
             <div onMouseUpCapture={()=>press()} style={{width:85,height:30,borderRadius:8,backgroundColor:'#376BF0',
             boxShadow:"0px 0.5px 3px #9E9E9E",cursor:'pointer',
             justifyContent:'center',alignItems:'center',display:'flex'}}>

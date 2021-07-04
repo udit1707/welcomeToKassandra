@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom';
 
 import Header from '../../Components/Headers/Header'
@@ -10,12 +10,14 @@ import Stocks from '../../Components/StockItems/Stocks';
 import TotalSales from "../../Components/TotalSales/TotalSales"
 import AllotStocks from '../../Components/AllotStocks/AllotStocks';
 import RegionalStock from '../../Components/Retailer/RegionalStock';
-
+import RetailerProductSold from '../../Components/ProductsSold/RetailerProductSold';
+import PopularRegionalStock from '../../Components/Retailer/PopularRegionalStock';
 const Products = props =>{
     const Wwidth=window.outerWidth;
     const Wheight=window.innerHeight;
     const location=useLocation();
     const history=useHistory();
+    const [state,setState]=useState('All')
     const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
     console.log(window.innerWidth  + "  "+ window.innerHeight)
     return <div style={{width:Wwidth,height:'100%',paddingBottom:15,backgroundColor:'#FAFAFA',cursor:'auto'}}>
@@ -32,7 +34,7 @@ const Products = props =>{
             justifyContent:'space-evenly',
             alignItems:'flex-start'
         }}>
-            <ProductsSold />
+            {role==='manufacturer'?<ProductsSold />:role==='retailer'?<RetailerProductSold />:null}
             <NewOrders />
         </div>
         <div style={{
@@ -111,7 +113,7 @@ const Products = props =>{
                 </div>
                 <text style={{fontFamily:'Segoe UI Semibold',fontSize:15,color:'white',marginLeft:12}}>Add Product </text>
             </div>
-    </div>:<RegionalStock />}
+    </div>:state === 'All'?<RegionalStock state={state} setState={(val)=>setState(val)} />:<PopularRegionalStock state={state} setState={(val)=>setState(val)} />}
     </div>}
 
 export default Products

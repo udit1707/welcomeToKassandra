@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import Order from '../../Assets/order.png'
 import Tshirt from '../../Assets/tshirt.png'
 import Tshirt2 from '../../Assets/tshirt2.jpg'
@@ -10,14 +10,17 @@ import tab from '../../Assets/tabs.png'
 import Similar from './Similar';
 import PricingItem from './PricingItem'
 import ToggleButtonComponent from '../ToggleButton/ToggleButton';
-
+import { selectProduct } from '../../store/actions/retailer'
+import INDIA_TOPO_JSON from '../AllotStocks/india.topo.json'
+import { useSelector } from 'react-redux'
 const Pricing = props => {
 
     const Wwidth = window.innerWidth;
     const [toggle,setToggle]=useState('true');
     const Wheight = window.innerHeight;
     const data_tags=['Platform','Present Sales','Target Sales','Present Profit','Profit Expectation','Present Price','Price Recommended']
-    
+    const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
+    const selected=useSelector(state=>state[role].product);
     const webData=[{
         src:Tshirt,itemTitle:'Black Round Neck T -Shirt,sizes - X, L,XL ',
         itemId:'#124513',soldUnits:'1000',
@@ -34,43 +37,56 @@ const Pricing = props => {
         src:Pant,itemTitle:'Black Round Neck T -Shirt,sizes - X, L,XL ',
         itemId:'#124513',soldUnits:'1000',
         soldPositiveCount:'42',soldNegativeCount:'12',price:120,platformName:'Amazon'},];
+    
+    const data=selected.regionStats.map(item=>{
+        return {
+            categoryId:selected.productInfo.categoryId,
+            regionId:item.id,
+            salesValue:item.sold_count,
+            presentProfit:item.sold_count*item.regional_price*0.35,
+            platformName:INDIA_TOPO_JSON.objects.india.geometries.find(region=>region.id === item.map_id).properties.name,
+            targetedSales:item.stock_count+item.sold_count,
+            presentPrice:item.regional_price,
+            retailPrice:item.regional_price*1.57,
+            suggestedPrice:null
+        }})
 
-    const data=[{
-        salesValue:100,
-        presentProfit:850,
-        platformName:'Amazon',
-        targetedSales:2000,
-        presentPrice:250,
-        retailPrice:350,
-        suggestedPrice:200,
-        },
-        {
-        salesValue:100,
-        presentProfit:850,
-        platformName:'Ebay',
-        targetedSales:2000,
-        presentPrice:250,
-        retailPrice:350,
-        suggestedPrice:200,
-        },
-        {
-        salesValue:100,
-        presentProfit:850,
-        platformName:'Alibaba',
-        targetedSales:2000,
-        presentPrice:250,
-        retailPrice:350,
-        suggestedPrice:200,
-        },
-        {
-        salesValue:100,
-        presentProfit:269,
-        platformName:'GO ready',
-        targetedSales:2000,
-        presentPrice:150,
-        retailPrice:350,
-        suggestedPrice:200,
-        }]
+    // const data=[{
+    //     salesValue:100,
+    //     presentProfit:850,
+    //     platformName:'Amazon',
+    //     targetedSales:2000,
+    //     presentPrice:250,
+    //     retailPrice:350,
+    //     suggestedPrice:200,
+    //     },
+    //     {
+    //     salesValue:100,
+    //     presentProfit:850,
+    //     platformName:'Ebay',
+    //     targetedSales:2000,
+    //     presentPrice:250,
+    //     retailPrice:350,
+    //     suggestedPrice:200,
+    //     },
+    //     {
+    //     salesValue:100,
+    //     presentProfit:850,
+    //     platformName:'Alibaba',
+    //     targetedSales:2000,
+    //     presentPrice:250,
+    //     retailPrice:350,
+    //     suggestedPrice:200,
+    //     },
+    //     {
+    //     salesValue:100,
+    //     presentProfit:269,
+    //     platformName:'GO ready',
+    //     targetedSales:2000,
+    //     presentPrice:150,
+    //     retailPrice:350,
+    //     suggestedPrice:200,
+    //     }]
 
     
 
@@ -104,7 +120,7 @@ const Pricing = props => {
                          borderRadius:5,
                         boxShadow:"0px 1px 3px #9E9E9E"}}>
                             <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:14}}>
-                                Tshirt Green Light</text>
+                                {selected.productInfo.prod_name}</text>
                     </div>
                     <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:15}}>Category</text>
                      <div style={{
@@ -119,7 +135,7 @@ const Pricing = props => {
                          borderRadius:5,
                         boxShadow:"0px 1px 3px #9E9E9E"}}>
                             <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:14}}>
-                                Casual Wear</text>
+                            {selected.category}</text>
                     </div>
                     <text style={{fontFamily:'Segoe UI Semibold',color:'#707070',fontSize:15}}>Pricing</text>
                      <div style={{
@@ -234,26 +250,19 @@ const Pricing = props => {
                 flexDirection:'column',
                 boxShadow:"2px 2px 5px #9E9E9E",
                 borderRadius:15}}>
-                    <div style={{width:'100%',height:'5%',justifyContent:'space-between',alignItems:'center',display:'flex'}}>
+                    <div style={{width:'100%',height:'5%',justifyContent:'flex-start',alignItems:'center',display:'flex'}}>
                         <text style={{color:'#383839',fontSize:17,fontFamily:'Segoe UI Semibold'}}>Price Predictor</text>
-                        <div style={{
-                            width:'10%',
-                            padding:8,
-                            borderRadius:10,
-                            backgroundColor:'#376BF0', 
-                            boxShadow:"2px 2px 5px #9E9E9E",
-                            justifyContent:'center',
-                            alignItems:'center',
-                            display:'flex'}}>
-                                <text style={{color:'white',fontSize:15,letterSpacing:'1px',fontFamily:'Segoe UI Semibold'}}>Predict</text>
-                        </div>
+                        
                     </div>
                     <div style={{flexDirection:'row',height:'3%',width:'100%',display:'flex',marginTop:'2%'}}>
                         {data_tags.map(item=><div style={{width:item==='Present Profit'?'10%':'14.28%',justifyContent:'center',alignItems:'center',display:'flex'}}>
                             <text style={{fontFamily:'Segoe UI Semibold',fontSize:14,color:'#3E42B5'}}>{item}</text>
                         </div>)}
                     </div>
-                    <div style={{overflowY:'auto',height:'90%',width:'100%'}}>{data.map(item=><div style={{marginTop:'2%'}}><PricingItem 
+                    <div style={{overflowY:'auto',height:'90%',width:'100%'}}>{data.map(item=><div style={{marginTop:'2%'}}><PricingItem
+                    regionId={item.regionId}
+                    categoryId={item.categoryId} 
+                    setContain={(val)=>props.setContain(val)}
                     salesValue={item.salesValue} 
                     presentProfit={item.presentProfit}
                     presentPrice={item.presentPrice}

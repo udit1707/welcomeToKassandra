@@ -106,7 +106,7 @@ const RegionalStockItem =props => {
             </div>
                        
             <div>
-                <ItemComponent  />
+                <ItemComponent setContain={(val)=>props.setContain(val)}  />
             </div>
         </div>;
         

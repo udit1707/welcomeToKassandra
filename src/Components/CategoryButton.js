@@ -63,7 +63,7 @@ const CategoryButton = props => {
             onBlur={()=>setbtnShow(false)}
             onMouseEnter={()=>setcategoryHover(item.id)}
             onMouseLeave={()=>setcategoryHover(null)}
-            onMouseUpCapture={()=>{setCategory(item);setbtnShow(false);props.setCategory(item)}}
+            onMouseUpCapture={()=>{setCategory(item.category_name);setbtnShow(false);props.setCategory(item)}}
             style={{
                 width:'100%',
                 backgroundColor:Category!==null && Category.id === item.id ?'#E3DFDF':categoryHover === item.id ?'#F5F3F3':null,

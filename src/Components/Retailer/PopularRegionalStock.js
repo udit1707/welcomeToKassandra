@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import slider from '../../Assets/sli_whi.png'
 
@@ -8,7 +8,7 @@ import PopularRegionalStockItem from './PopularRegionalStockItem'
 import CategoryButton from '../CategoryButton'
 import Loader from 'react-loader-spinner'
 import { useDispatch, useSelector } from 'react-redux'
-import { retailerGetTopRegionalProducts } from '../../store/actions/retailer'
+import { retailerGetTopRegionalProducts, selectProduct } from '../../store/actions/retailer'
 
 const PopularRegionalStock =props => {
     
@@ -18,13 +18,29 @@ const PopularRegionalStock =props => {
     const [category,setCategory]=useState(null);
     const token=JSON.parse(localStorage.getItem('stateRetail')).token;
     const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
-    const products = useSelector(state=>state[role].products);
-    const categories = useSelector(state=>state[role].categories);
-    const [selected,setSelected]=useState(products!==null && products.length !==0 ?products[0]:null);
+    const products = useSelector(state=>state[role].topProductsRegional);
+    const categories = JSON.parse(localStorage.getItem('stateRetailCat')).categories;
+    const selected=useSelector(state=>state[role].product);
     const dispatch=useDispatch();
     // [{src:tshirt,title:'1'},{src:tshirt2,title:'2'},{src:lap,title:'3'},{src:earpod,title:'4'},{src:phone,title:'5'},{src:earpod,title:'6'},{src:phone,title:'7'}];
     const Wwidth = window.innerWidth;
     const Wheight = window.innerHeight;
+
+    const press=useCallback(async(prod)=>{
+        setContain(false)
+        try{
+            const result = await dispatch(selectProduct(prod));
+            console.log(result);
+            setContain(true)  
+        }catch(err){
+            setContain(true)
+            console.log(err);
+            window.alert(err.message)
+        }
+        
+        return ;
+    },[dispatch,setContain,props,selectProduct])
+
     const f2=useCallback(async ()=>{
         setContain(false)
         try{
@@ -49,7 +65,7 @@ const PopularRegionalStock =props => {
                     onMouseEnter={()=>setHover(item.productInfo.id)}
                     onMouseLeave={()=>setHover(null)}
                     key={item.id}
-                    onMouseUpCapture={()=>setSelected(item)}
+                    onMouseUpCapture={()=>press(item)}
                     style={{
                         width:Wwidth*0.03,
                         height:Wwidth*0.03,
@@ -63,10 +79,10 @@ const PopularRegionalStock =props => {
                     </div>}
                     else{
                     return <div 
-                    onMouseEnter={()=>setHover(item.id)}
+                    onMouseEnter={()=>setHover(item.productInfo.id)}
                     onMouseLeave={()=>setHover(null)}
                     key={item.id}
-                    onMouseUpCapture={()=>setSelected(item)}
+                    onMouseUpCapture={()=>press(item)}
                     style={{
                         width:Wwidth*0.03,
                         height:Wwidth*0.03,
@@ -76,12 +92,13 @@ const PopularRegionalStock =props => {
                         boxShadow:"0px 0.5px 3px #9E9E9E",
                         overflow:'hidden',
                         }}>
-                            <img src={item.image} style={{width:'100%',height:'100%'}} />
+                            <img src={item.productInfo.image} style={{width:'100%',height:'100%'}} />
                     </div>}}):null;
 
 const component =!contain?
+                <div>
                 <div style={{
-                    width:Wwidth*0.85/(1920/505),
+                    width:Wwidth,
                     height:Wheight/(1080/496),
                     justifyContent:'center',
                     alignItems:'center',display:'flex',flexDirection:'column'}}>
@@ -93,6 +110,7 @@ const component =!contain?
                     //3 secs
                 />
                 <text style={{fontFamily:'Segoe UI Semibold ',fontSize:20,color:'#275473',marginTop:'3%'}}>Fetching In....</text>
+                </div>
                 </div>:
                 <div style={{width:'100%',height:'100%',flexDirection:'column',justifyContent:'flex-start',alignItems:'center',display:'flex'}}>
                     <div style={{width:'100%',height:Wheight*0.06,marginTop:'2%',display:'flex',justifyContent:'space-around',alignItems:'center'}}>
@@ -101,6 +119,7 @@ const component =!contain?
                             width:Wwidth/(1920/260),
                             height:Wheight/(1080/60),
                         }}
+                        category={category}
                         setCategory={(val)=>setCategory(val)}
                         title='Select Category' 
                         data={categories}/>
@@ -158,30 +177,29 @@ const component =!contain?
                                 overflow:'hidden',
                                 cursor:'pointer',
                                 display:'flex'}}>
-                                <div onMouseUpCapture={()=>setState("Digital")} 
+                                <div onMouseUpCapture={()=>props.setState("All")} 
                                 style={{
                                     width:'50%',
-                                    backgroundColor:state === 'Digital'?'#376BF0':null,
+                                    backgroundColor:props.state === 'All'?'#376BF0':null,
                                     height:'100%',
                                     alignItems:'center',
                                     justifyContent:'center',
                                     display:'flex'}}>
-                                    <text style={{fontFamily:'Segoe UI',fontSize:15,color:state === 'Digital'?'white':'#376BF0'}}>Digital</text>
+                                    <text style={{fontFamily:'Segoe UI',fontSize:15,color:props.state === 'All'?'white':'#376BF0'}}>All</text>
                                 </div>
-                                <div onMouseUpCapture={()=>setState("Regional")} 
+                                <div onMouseUpCapture={()=>props.setState("Popular")} 
                                 style={{
                                     width:'50%',
-                                    backgroundColor:state === 'Regional'?'#376BF0':null,
+                                    backgroundColor:props.state === 'Popular'?'#376BF0':null,
                                     height:'100%',
                                     alignItems:'center',
                                     justifyContent:'center',
                                     display:'flex'}}>
-                                    <text style={{fontFamily:'Segoe UI',fontSize:15,color:state === 'Regional'?'white':'#376BF0'}}>Popular</text>
+                                    <text style={{fontFamily:'Segoe UI',fontSize:15,color:props.state === 'Popular'?'white':'#376BF0'}}>Popular</text>
                                 </div>                            
                                 </div>
                             </div>
-                        {state === 'Digital'?
-                        <PopularRegionalStockItem item={selected}/>:null}
+                        <PopularRegionalStockItem setContain={(val)=>setContain(val)}/>
                         
                     </div>
     return component;
