@@ -1,0 +1,23 @@
+body {
+    background: 'transparent';
+    background-size: contain;
+    background-color: #FAFAFA;
+    overflow-y: auto;
+    overflow-x: hidden;
+    }
+  .animus {
+    position: relative;
+    z-index: -3;
+    
+  }
+  .introBox {
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    width: 20%;
+    background-color: gold;
+  }
+  .logo {
+    max-width: 100%;
+  }
+  

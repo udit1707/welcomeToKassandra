@@ -1,0 +1,150 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  background-color: #f2f2f2;
+  
+}
+body {
+  margin: 0;
+  padding: 0 0 100px 0;
+  font-family: sans-serif;
+  overflow-x: hidden;
+  
+}
+.column {
+  width: 264px;
+  position: relative;
+  left: 200px;
+  top: 150px;
+}
+.option {
+  border: 3px #f3f3f3 solid;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s linear;
+  cursor: pointer;
+  background-color: #f3f3f3;
+  padding: 10px;
+  max-width: 220px;
+  text-align: left;
+  margin: 0 auto;
+}
+.option img {
+  max-width: calc(100%);
+  margin: 0 auto;
+  display: block;
+}
+.subOptions {
+  margin: 0 auto;
+  z-index: 2;
+}
+.suboptions-slider.active-slide-0 #card-0 {
+  opacity: 1;
+  transform: scale(1);
+  background-color: #f3f3f3;
+  border-color: #f3f3f3;
+}
+.suboptions-slider.active-slide-1 #card-1 {
+  opacity: 1;
+  transform: scale(1);
+  background-color: #f3f3f3;
+  border-color: #f3f3f3;
+}
+.suboptions-slider.active-slide-2 #card-2 {
+  opacity: 1;
+  transform: scale(1);
+  background-color: #f3f3f3;
+  border-color: #f3f3f3;
+}
+.suboptions-wrapper {
+  display: block;
+  position: absolute;
+  transition: transform 300ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+.suboptions-wrapper img {
+  flex: 1;
+  max-width: calc(100%);
+  opacity: 0.7;
+  transform: scale(0.8);
+  box-shadow: none;
+  background-color: white;
+  border-color: white;
+  transition: opacity 300ms linear, border-color 300ms linear,
+    background-color 300ms linear,
+    transform 300ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+.col {
+  height: 264px;
+  position: relative;
+}
+.col:before,
+.col:after {
+  content: "";
+  display: block;
+  width: 50%;
+  height: 120%;
+  background: linear-gradient(to right, white 15%, rgba(255, 255, 255, 0) 100%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+.col:after {
+  left: auto;
+  right: 0;
+  background: linear-gradient(to left, white 15%, rgba(255, 255, 255, 0) 100%);
+}
+.col-slider {
+  position: relative;
+  max-width: 226px;
+  margin: 0 auto;
+}
+.col-slider-wrapper {
+  display: flex;
+  position: absolute;
+  transition: transform 300ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+.col-slider-wrapper .App {
+  flex: 1;
+  min-width: 200px;
+  opacity: 0.7;
+  transform: scale(0.8);
+  box-shadow: none;
+  background-color: white;
+  border-color: white;
+  transition: opacity 300ms linear, border-color 300ms linear,
+    background-color 300ms linear,
+    transform 300ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+.col-slider.active-slide-0 #card-0 {
+  opacity: 1;
+  transform: scale(1);
+  background-color: #f3f3f3;
+  border-color: #f3f3f3;
+}
+.col-slider.active-slide-0 #card-0 {
+  opacity: 1;
+  transform: scale(1);
+  background-color: #f3f3f3;
+  border-color: #f3f3f3;
+}
+.col-slider.active-slide-0 #card-0 {
+  opacity: 1;
+  transform: scale(1);
+  background-color: #f3f3f3;
+  border-color: #f3f3f3;
+}
+.Particles {
+  z-index: -2;
+}
+
+.hTest {
+  position: absolute;
+  color: red;
+  top: 10%;
+}
+canvas {
+  flex: 1;
+  height: 100%;
+  overflow-y: hidden;
+  background-color: #34378B;
+}
