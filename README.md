@@ -159,7 +159,7 @@ Kassandra is a suite of software tools designed to give resellers with assistanc
 * To incorporate open source online business API's to thus stretching around the web for showcasing patterns and suggesting better methodologies to our registered merchants.
 * To include certain digital market and commercial stages to work on the same side with their administrations and API's interfaces so we can assemble our project philosophy ideally
 
-### Thanks You!
+### Thank You!
 
 
 
