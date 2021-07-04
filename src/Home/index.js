@@ -43,6 +43,7 @@ const Home = () => {
             {
                 name: 'E- Business',
                 image: ecom,
+                url:'/Dashboard',
                 progress: undefined,
                 label: 'ecom',
                 bg: 'bgco2',
@@ -51,6 +52,7 @@ const Home = () => {
             {
                 name: 'Track Orders',
                 image: track,
+                url:'/products/unitSales',
                 progress: undefined,
                 label: 'tracking',
                 bg: 'bgco3',
@@ -59,19 +61,13 @@ const Home = () => {
             {
                 name: 'Explore Web',
                 image: explo,
+                url:'/listed',
                 progress: undefined,
                 label: 'explore',
                 bg: 'bgco4',
                 gc: 'gc4'
             },
-            {
-                name: ' Employees',
-                image: emp,
-                progress: undefined,
-                label: 'explore',
-                bg: 'bgco4',
-                gc: 'gc4'
-            },
+            
         ];
     }, []);
     const options = useMemo(() => {
@@ -137,7 +133,7 @@ const Home = () => {
         
     </div>
     <div style={{width:'100%',height:Wheight,position:'absolute'}}>
-    <AnimusParticle />
+        <AnimusParticle />
     </div>
     </div>);
 };
