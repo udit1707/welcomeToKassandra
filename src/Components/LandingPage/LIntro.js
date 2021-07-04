@@ -27,6 +27,15 @@ export default function LIntro(props) {
     
   }
   useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(visible ? false : true);
+      if (visible === false) {
+        setTitleCount((titleCount + 1) % 4);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [visible, titleCount]);
+  useEffect(() => {
         
     window.addEventListener('scroll', handler);
  
