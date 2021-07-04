@@ -77,6 +77,10 @@ class Upload extends Component{
         }
         
     }
+    Back=()=> {
+        this.props.history.push('/products/Stocks')
+        return;
+    }
      onSubmitHandler = async () => {
         
         const token=JSON.parse(localStorage.getItem('stateRetail')).token;
@@ -97,7 +101,7 @@ class Upload extends Component{
             const result = role ==='manufacturer'? await this.newProduct(fd,token):null;
             console.log(result);                    
             this.state({contain:true});
-            this.props.history.push('/products/allotStocks')
+            this.props.history.push('/products/allotStocks');
         }catch(err){
             this.state({contain:true});
             console.log(err);
@@ -386,7 +390,7 @@ class Upload extends Component{
     </div>
     
     <footer role="banner" className={"upload_flow_footer"}>
-        <div onClick={this.history.push('/products/unitSales')} className={"footer_actions_left"}>
+        <div onClick={this.Back} className={"footer_actions_left"}>
           <a style={{textDecoration:"none"}} href="" className={["dd_btn","dd_btn_tertiary"].join(" ")}>Cancel</a>                          
         </div>
         <div onClick={this.onSubmitHandler} style={{width:'7%',marginLeft:'3%',backgroundColor:'#3E42B5'}} className={["dd_btn2","dd_btn_tertiary"].join(" ")} >
