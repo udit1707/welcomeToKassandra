@@ -105,9 +105,9 @@ Kassandra is a suite of software tools designed to give resellers with assistanc
 ##### Kassandra Assist for Signup and Login
 
 <p float="left">
-<img src="https://user-images.githubusercontent.com/43987867/124390393-fe3fc100-dd08-11eb-8946-1f4d42abf8f3.jpeg" alt="Kassandra Assist" height="20%" width="25%">
-<img src="https://user-images.githubusercontent.com/43987867/124390412-22030700-dd09-11eb-9be5-2c21cea54da1.jpeg" alt="signup" height="20%" width="25%">
-<img src="https://user-images.githubusercontent.com/43987867/124390427-35ae6d80-dd09-11eb-9355-4a90073c9aaa.jpeg" alt="Login" height="20%" width="25%">
+<img src="https://user-images.githubusercontent.com/43987867/124390393-fe3fc100-dd08-11eb-8946-1f4d42abf8f3.jpeg" alt="Kassandra Assist" height="20%" width="30%">
+<img src="https://user-images.githubusercontent.com/43987867/124390412-22030700-dd09-11eb-9be5-2c21cea54da1.jpeg" alt="signup" height="20%" width="30%">
+<img src="https://user-images.githubusercontent.com/43987867/124390427-35ae6d80-dd09-11eb-9355-4a90073c9aaa.jpeg" alt="Login" height="20%" width="30%">
 </p>
 
 ----
@@ -115,18 +115,18 @@ Kassandra is a suite of software tools designed to give resellers with assistanc
 ##### Employee Profile and Job Selection
 
 <p float="left">
-<img src="https://user-images.githubusercontent.com/43987867/124390499-8f169c80-dd09-11eb-9202-93c35eb23d1f.jpeg" alt="Employee Profile" height="20%" width="33%">
-<img src="https://user-images.githubusercontent.com/43987867/124390758-9ee2b080-dd0a-11eb-9370-1f1433022069.jpeg" alt="Job Selection" height="20%" width="33%">
-<img src="https://user-images.githubusercontent.com/43987867/124390784-b6ba3480-dd0a-11eb-9fad-74d1a2cfde57.jpeg" alt="js2" height="20%" width="33%">
+<img src="https://user-images.githubusercontent.com/43987867/124390499-8f169c80-dd09-11eb-9202-93c35eb23d1f.jpeg" alt="Employee Profile" height="20%" width="30%">
+<img src="https://user-images.githubusercontent.com/43987867/124390758-9ee2b080-dd0a-11eb-9370-1f1433022069.jpeg" alt="Job Selection" height="20%" width="30%">
+<img src="https://user-images.githubusercontent.com/43987867/124390784-b6ba3480-dd0a-11eb-9fad-74d1a2cfde57.jpeg" alt="js2" height="20%" width="30%">
 </p>
 
 ----
 
 #### Employee Job Recommender
 <p float="left">
-  <img src="https://user-images.githubusercontent.com/43987867/124390889-4e1f8780-dd0b-11eb-866d-bcf074b3bab8.jpeg" alt="Main Menu" height="20%" width="33%">
-<img src="https://user-images.githubusercontent.com/43987867/124390874-3811c700-dd0b-11eb-8731-3fe340cd5937.jpeg" alt="Jr1" height="20%" width="33%">
-<img src="https://user-images.githubusercontent.com/43987867/124390874-3811c700-dd0b-11eb-8731-3fe340cd5937.jpeg" alt="jr2" height="20%" width="33%">
+  <img src="https://user-images.githubusercontent.com/43987867/124390889-4e1f8780-dd0b-11eb-866d-bcf074b3bab8.jpeg" alt="Main Menu" height="20%" width="30%">
+<img src="https://user-images.githubusercontent.com/43987867/124390874-3811c700-dd0b-11eb-8731-3fe340cd5937.jpeg" alt="Jr1" height="20%" width="30%">
+<img src="https://user-images.githubusercontent.com/43987867/124390874-3811c700-dd0b-11eb-8731-3fe340cd5937.jpeg" alt="jr2" height="20%" width="30%">
 </p>
 
 ---
