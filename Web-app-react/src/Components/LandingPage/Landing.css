@@ -1,0 +1,261 @@
+/*LNavBar*/
+.ln-bg {
+  background-color: #16253d;
+}
+/*LIntro*/
+.li-container {
+  background: rgb(241, 241, 242);
+  background: linear-gradient(
+    90deg,
+    rgba(241, 241, 242, 1) 0%,
+    rgba(196, 223, 230, 1) 50%,
+    rgba(241, 241, 242, 1) 100%
+  );
+}
+.li-row {
+  background-color: transparent;
+  padding: 5%;
+}
+.li-jumbo {
+  background-color: transparent;
+  padding: 5%;
+  
+}
+.li-h1 {
+  text-align: left;
+  font-weight: bold;
+  box-shadow: 0 0 0 0px;
+  background: transparent;
+}
+.span-fade-in {
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+.span-fade-out {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.li-p {
+  color: #07575b;
+}
+.li-button {
+  padding: 0.5rem 1.6rem;
+  border-radius: 2rem;
+  font-size: 0.875em;
+  font-weight: bold;
+}
+.li-img {
+  max-width: 100%;
+  height: auto;
+}
+.li-logo-text {
+  text-align: center;
+  color: #07575b;
+}
+.li-particles-bg {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: -1;
+}
+/*LApps*/
+.la-container {
+  background: rgb(0, 59, 70);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 59, 70, 1) 0%,
+    rgba(7, 87, 91, 1) 100%
+  );
+}
+.la-row {
+  background-color: transparent;
+  padding: 5%;
+}
+.la-jumbo {
+  background-color: transparent;
+  padding: 5%;
+}
+.la-h1 {
+  text-align: right;
+  font-weight: bold;
+  color: #c4dfe6;
+}
+.la-button {
+  padding: 0.5rem 1.6rem;
+  border-radius: 2rem;
+  font-size: 0.875em;
+  font-weight: bold;
+  margin-left: 10px;
+}
+.la-p {
+  text-align: right;
+  color: #c4dfe6;
+}
+.la-h4 {
+  text-align: right;
+  font-weight: bold;
+  margin-right: 10px;
+  color: #c4dfe6;
+}
+.la-fa {
+  margin-right: 5px;
+}
+/* LFeatures */
+.lf-container {
+  background: rgb(2, 28, 30);
+  background: linear-gradient(
+    180deg,
+    rgba(2, 28, 30, 1) 0%,
+    rgba(0, 68, 69, 1) 100%
+  );
+}
+.lf-jumbo {
+  background-color: transparent;
+  padding: 5%;
+}
+.lf-app-jumbo {
+  margin-bottom: 0%;
+}
+.lf-h3 {
+  text-align: center;
+  color: #f1f1f2;
+  font-weight: bold;
+}
+.lf-p {
+  text-align: center;
+  color: #f1f1f2;
+}
+.nav-tabs {
+  border-bottom: none;
+}
+.nav-tabs .nav-link:hover {
+  color: #0fd7e6;
+  /* border-bottom: 0.1875rem solid #afb1b1; */
+}
+.nav-tabs .nav-link {
+  color: #f1f1f2;
+  border-bottom: 0.1875rem solid #f1f1f2;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.nav-tabs .nav-link.active {
+  color: #00c9db;
+  background-color: transparent;
+  border: none;
+  border-bottom: 0.1875rem solid #00c9db;
+}
+.lf-fa {
+  margin-right: 5px;
+}
+/*LPreview*/
+
+.lp-container {
+  background: rgb(241, 241, 242);
+  
+}
+.lp-jumbo {
+  background-color: transparent;
+  padding: 5%;
+  padding-bottom: 1%;
+}
+.lp-caraousel-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding-top: 56.25%;
+  margin-bottom: 5%;
+}
+.lp-responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+.lp-caraousel-caption {
+  margin-top: 5%;
+}
+.lp-h3 {
+  text-align: center;
+  font-weight: bold;
+}
+.lp-p {
+  text-align: center;
+}
+.test {
+  height: 400px;
+  width: 500px;
+  background-color: blue;
+}
+.test2 {
+  height: 400px;
+  width: 500px;
+  background-color: red;
+}
+/*LContact*/
+.lc-container {
+  background: rgb(0, 59, 70);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 59, 70, 1) 0%,
+    rgba(7, 87, 91, 1) 100%
+  );
+}
+.lc-jumbo {
+  background-color: transparent;
+  padding: 5%;
+  margin-bottom: 0;
+}
+.lc-h3 {
+  text-align: center;
+  font-weight: bold;
+  color: #c4dfe6;
+}
+.lc-p {
+  text-align: center;
+  color: #c4dfe6;
+}
+.lc-card {
+  background-color: #063852;
+}
+.lc-card-title {
+  text-align: center;
+  font-weight: bold;
+  color: #c4dfe6;
+}
+.lc-card-text {
+  text-align: center;
+  color: #c4dfe6;
+}
+/*LFooter*/
+.lft-container {
+  background: rgba(2, 28, 30, 1);
+  padding: 7%;
+}
+.lft-h6 {
+  font-weight: bold;
+  color: #9f9caf;
+  font-size: 0.875em;
+}
+.lft-p {
+  color: #9f9caf;
+  font-size: 0.775em;
+  margin-top: 1em;
+}
+.lft-col {
+  margin-right: 5.5rem;
+}
+.lft-span {
+  width: 2em;
+  margin-right: 1.2rem;
+}
+.lft-fa {
+  color: #c4dfe6;
+  font-size: 1.5rem;
+}
+.lft-fa-bg {
+  color: #1995ad;
+}
