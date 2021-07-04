@@ -105,9 +105,9 @@ Kassandra is a suite of software tools designed to give resellers with assistanc
 ##### Kassandra Assist for Signup and Login
 
 <p float="left">
-<img src="https://user-images.githubusercontent.com/43987867/124390393-fe3fc100-dd08-11eb-8946-1f4d42abf8f3.jpeg" alt="Kassandra Assist" height="20%" width="33%">
-<img src="https://user-images.githubusercontent.com/43987867/124390412-22030700-dd09-11eb-9be5-2c21cea54da1.jpeg" alt="signup" height="20%" width="33%">
-<img src="https://user-images.githubusercontent.com/43987867/124390427-35ae6d80-dd09-11eb-9355-4a90073c9aaa.jpeg" alt="Login" height="20%" width="33%">
+<img src="https://user-images.githubusercontent.com/43987867/124390393-fe3fc100-dd08-11eb-8946-1f4d42abf8f3.jpeg" alt="Kassandra Assist" height="20%" width="25%">
+<img src="https://user-images.githubusercontent.com/43987867/124390412-22030700-dd09-11eb-9be5-2c21cea54da1.jpeg" alt="signup" height="20%" width="25%">
+<img src="https://user-images.githubusercontent.com/43987867/124390427-35ae6d80-dd09-11eb-9355-4a90073c9aaa.jpeg" alt="Login" height="20%" width="25%">
 </p>
 
 ----
