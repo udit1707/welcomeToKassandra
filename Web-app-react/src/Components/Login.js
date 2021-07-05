@@ -111,7 +111,7 @@ const Login = (props) => {
         width={80}
          //3 secs
       />
-      <text style={{fontFamily:'Segoe UI Semibold ',fontSize:20,color:'#275473',marginTop:'3%'}}>Loging In....</text>
+      <text style={{fontFamily:'Segoe UI Semibold ',fontSize:20,color:'#275473',marginTop:'3%'}}>Logging In....</text>
     </div>:<div style={{width:'100%',height:'100%',marginTop:'5%'}}>
         <text style={{userSelect:'none',fontFamily:'Segoe UI',color:'#313030',fontSize:18}}>Kassandra Portal Id</text>
         {/* <div onMouseUpCapture={()=>setPressed('PortalId')} 
