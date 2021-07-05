@@ -39,9 +39,8 @@ export const getCategories = () => {
     }
 }
 
-export const newProduct = (formData,token) => {
-    return async dispatch => {
-        try{const response=await fetch('http://welcome-to-kassandra.azurewebsites.net/manufacturer/newProduct',{
+export const newProduct = async(formData,token) => {
+    const response= await fetch('http://welcome-to-kassandra.azurewebsites.net/manufacturer/newProduct',{
             method:'POST',
             headers:{
                 'Authorization':'Bearer '+token 
@@ -49,10 +48,13 @@ export const newProduct = (formData,token) => {
             body:formData
             
         });
+        console.log("done");
         if(!response.ok){
-            let errorId= ((await response.json()).error);
-            throw new Error('Error in Fetching Data');
+            // let errorId= ((await response.json()).error);
+            console.log('Error in Fetching Data');
         }
+    return async(dispatch) => {
+        try{    
         const response2=await fetch('http://welcome-to-kassandra.azurewebsites.net/manufacturer/products',{
             method:'GET',
             headers:{

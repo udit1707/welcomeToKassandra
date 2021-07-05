@@ -22,10 +22,8 @@ class Upload extends Component{
         title:null,
         description:null,
         category:null,
-        gender:null,
         pressed:null,
         hoverState:null,
-        brand:null,
         contain:true,
         price:null,
         units:null,
@@ -60,9 +58,7 @@ class Upload extends Component{
         if(ele === "title"){
             this.setState({title:event.target.value});
         }
-        if(ele === "brand"){
-            this.setState({brand:event.target.value});
-        }
+        
         if(ele === "price"){
             this.setState({price:event.target.value});
         }
@@ -82,28 +78,33 @@ class Upload extends Component{
         return;
     }
      onSubmitHandler = async () => {
+//         console.log(this.state);
         
         const token=JSON.parse(localStorage.getItem('stateRetail')).token;
         const role=`${JSON.parse(localStorage.getItem('stateRetail')).role}`.toLowerCase();
         const fd = new FormData();
+        // console.log(token);
         fd.append("image",this.state.selectedFile);
         fd.append("prodName",this.state.title);
-        fd.append("content",this.state.description);
+        fd.append("factoryPrice",this.state.price);
+        fd.append("desc",this.state.description);
         fd.append("category",this.state.category);
         fd.append("units",this.state.units);
         fd.append("snNo",this.state.snNo);
-        fd.append("brand",this.state.brand);
-        fd.append("gender",this.state.gender);
-        console.log(this.state.selectedFile);
+  //      fd.append("brand",this.state.brand);
+ //       fd.append("gender",this.state.gender);
+        // console.log(this.state.selectedFile);
         
         try{
-            this.state({contain:false});
-            const result = role ==='manufacturer'? await this.newProduct(fd,token):null;
-            console.log(result);                    
-            this.state({contain:true});
-            this.props.history.push('/products/allotStocks');
+            this.setState({contain:false});
+            const result = role =='manufacturer'? await newProduct(fd,token):null;
+            // console.log(result);                    
+            this.setState({contain:true});
+            // this.props.history.push('/products/allotStocks');
+            window.alert("Product Added Success! Check Stocks Space!")
+
         }catch(err){
-            this.state({contain:true});
+            this.setState({contain:true});
             console.log(err);
             window.alert(err.message)
         }
@@ -190,14 +191,16 @@ class Upload extends Component{
                                 backgroundColor:'rgb(247, 247, 247)',
                                 boxSizing:'border-box',}} 
                                 value={this.state.category} onChange={(e)=>this.handleChange(e)}>
-                                <option value="grapefruit">Grapefruit</option>
-                                <option value="lime">Lime</option>
-                                <option value="coconut">Coconut</option>
-                                <option value="mango">Mango</option>
+                                    <option value="Audio">Audio</option>
+                                <option value="Desktop">Desktop</option>
+                                <option value="Laptop">Laptop</option>
+                                <option value="Mobile">Mobile</option>
+                                <option value="Storage">Storage</option>                         
+
                             </select> 
                              </span>
                         </div>
-                        <div style={{width:'40%'}} >
+                        {/* <div style={{width:'40%'}} >
                             <label style={{userSelect:'none',fontFamily:'Segoe UI ',color:'#1F1F20',fontSize:16}} className={"label"}>Select Gender</label>
                              <span className={"dd_input_wrap"}>
                              <select onMouseEnter={()=>this.setHoverState('gender')}
@@ -219,11 +222,11 @@ class Upload extends Component{
                                 <option value="Anyone">Anyone</option>
                             </select> 
                              </span>
-                        </div>
+                        </div> */}
                     </div>  
-                    <div className={"form_field"}>
+                    {/* <div className={"form_field"}>
                         <div >
-                            <label style={{userSelect:'none',fontFamily:'Segoe UI ',color:'#1F1F20',fontSize:16}} className={"label"}>Brand</label>
+                            <label style={{userSelect:'none',fontFamily:'Segoe UI ',color:'#1F1F20',fontSize:16}} className={"label"}>Price</label>
                              <span className={"dd_input_wrap"}>
                                  <input
                                  onMouseEnter={()=>this.setHoverState('Brand')}
@@ -236,7 +239,7 @@ class Upload extends Component{
                                      </input> 
                              </span>
                         </div>
-                    </div>
+                    </div> */}
                     <div className={"form_field"}>
                         <div >
                             <label style={{userSelect:'none',fontFamily:'Segoe UI ',color:'#1F1F20',fontSize:16}} className={"label"}>Price</label>
