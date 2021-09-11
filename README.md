@@ -1,17 +1,5 @@
 # welcomeToKassandra
 
-## THEME: Azure for Industries
-
-### SUB-THEME: Retail
-
-### Problem Statement
-
-Predictive AI, machine learning, and analytics can help retailers unlock new opportunities with data. They're also reimagining their business using Mixed Reality solutions, IoT, hybrid cloud, and computer vision. Propose ideas to help retailers keep their supply chains agile with Microsoft Azure.
-
-Tell us how your idea can help retailers to create personalized customer experiences across channels, empowering employees, and keeping their supply chains agile, and provide gain visibility across your end-to-end supply chain, and unlock innovative business models with secure and scalable cloud-based technology.
-
-### Objective
-
 Our proposal aims to achieve the following three objective with the help of our application "Kassandra"-
 
 * Stock Management
